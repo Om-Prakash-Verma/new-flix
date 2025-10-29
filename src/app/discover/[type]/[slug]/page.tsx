@@ -2,13 +2,12 @@
 'use client';
 
 import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
-import { useSearchParams, notFound } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getGenres, getCountryName, fetchCombinedMedia } from "@/lib/tmdb";
-import type { Movie, TVShow, SearchResult } from '@/lib/tmdb-schemas';
+import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useInView } from 'react-intersection-observer';
-import { siteConfig } from '@/config/site';
 import { extractIdFromSlug } from '@/lib/utils';
 
 export const runtime = 'edge';
@@ -56,6 +55,7 @@ async function getPageData(type: string, slug: string): Promise<PageData | null>
 
 
 function DiscoverPageContent({ params }: DiscoverPageProps) {
+    const { type, slug } = params;
     const [pageData, setPageData] = useState<PageData | null>(null);
     const [items, setItems] = useState<(Movie | TVShow)[]>([]);
     const [page, setPage] = useState(0);
@@ -70,7 +70,6 @@ function DiscoverPageContent({ params }: DiscoverPageProps) {
     });
 
     const hasMore = page < totalPages;
-    const { type, slug } = params;
 
     const loadPageData = useCallback(async () => {
         const data = await getPageData(type, slug);
@@ -79,7 +78,6 @@ function DiscoverPageContent({ params }: DiscoverPageProps) {
             return;
         }
         setPageData(data);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, slug]);
 
     useEffect(() => {
