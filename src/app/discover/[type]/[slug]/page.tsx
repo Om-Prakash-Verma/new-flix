@@ -1,14 +1,11 @@
 
-'use client';
-
-import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import { notFound } from 'next/navigation';
 import { getGenres, getCountryName, fetchCombinedMedia } from "@/lib/tmdb";
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
-import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useInView } from 'react-intersection-observer';
 import { extractIdFromSlug } from '@/lib/utils';
+import { DiscoverPageContent } from './DiscoverPageContent';
+import type { Metadata } from 'next';
+import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
 
@@ -19,7 +16,7 @@ type DiscoverPageProps = {
     };
 };
 
-type PageData = {
+export type PageData = {
     id: string;
     name: string;
     title: string;
@@ -53,132 +50,54 @@ async function getPageData(type: string, slug: string): Promise<PageData | null>
     }
 }
 
+export async function generateMetadata({ params }: DiscoverPageProps): Promise<Metadata> {
+  const pageData = await getPageData(params.type, params.slug);
+  
+  if (!pageData) {
+    return {
+      title: 'Not Found',
+      description: 'The page you are looking for does not exist.',
+    };
+  }
 
-function DiscoverPageContent({ params }: DiscoverPageProps) {
+  const title = `${pageData.name} | ${siteConfig.name}`;
+  const description = `Discover the best movies and TV shows for ${pageData.name}.`;
+  const canonicalUrl = `/discover/${params.type}/${params.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+        canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: canonicalUrl,
+    },
+  };
+}
+
+
+export default async function DiscoverPage({ params }: DiscoverPageProps) {
     const { type, slug } = params;
-    const [pageData, setPageData] = useState<PageData | null>(null);
-    const [items, setItems] = useState<(Movie | TVShow)[]>([]);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const pageData = await getPageData(type, slug);
 
-    const { ref: loadMoreRef, inView } = useInView({
-        threshold: 0.5,
-        triggerOnce: false,
-    });
-
-    const hasMore = page < totalPages;
-
-    const loadPageData = useCallback(async () => {
-        const data = await getPageData(type, slug);
-        if (!data) {
-            setError(true);
-            return;
-        }
-        setPageData(data);
-    }, [type, slug]);
-
-    useEffect(() => {
-        loadPageData();
-    }, [loadPageData]);
-
-
-    const loadItems = useCallback(async (isNewQuery = false) => {
-        if (isLoading || (!hasMore && !isNewQuery) || !pageData) return;
-
-        setIsLoading(true);
-        if (isNewQuery) {
-            setItems([]);
-            setPage(0);
-        }
-        const nextPage = isNewQuery ? 1 : page + 1;
-
-        try {
-            const data = await fetchCombinedMedia({ discoveryType: type, id: pageData.id, page: nextPage });
-            setItems(prev => {
-                const newItems = data.results.filter(
-                    (newItem) => !prev.some(existingItem => existingItem.id === newItem.id)
-                );
-                return isNewQuery ? data.results : [...prev, ...newItems];
-            });
-            setPage(nextPage);
-            setTotalPages(data.total_pages);
-        } catch (error) {
-            console.error("Failed to fetch discovery results", error);
-        } finally {
-            setIsLoading(false);
-            if (isNewQuery) setIsInitialLoading(false);
-        }
-    }, [isLoading, hasMore, page, pageData, type]);
-
-    const loadItemsRef = useRef(loadItems);
-    loadItemsRef.current = loadItems;
-
-    useEffect(() => {
-        if (pageData) {
-            setIsInitialLoading(true);
-            loadItemsRef.current(true);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageData]);
-
-    useEffect(() => {
-        if (inView && !isLoading) {
-            loadItemsRef.current();
-        }
-    }, [inView, isLoading]);
-
-    if (error) {
+    if (!pageData) {
         notFound();
     }
 
-    if (isInitialLoading || !pageData) {
-        return (
-            <div className="py-12 px-4 sm:px-8">
-                <div className="max-w-4xl mx-auto">
-                    <Skeleton className="h-10 w-1/2 mb-8" />
-                    <div className="flex flex-col gap-4">
-                        {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    const noResults = items.length === 0 && !isLoading;
+    // Fetch the first page on the server
+    const initialItems = await fetchCombinedMedia({ discoveryType: type, id: pageData.id, page: 1 });
 
     return (
-        <div className="py-12 px-4 sm:px-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl md:text-4xl font-bold mb-8">
-                    <span className="text-muted-foreground capitalize">{type}:</span> {pageData.name}
-                </h1>
-
-                {noResults && <p className="text-muted-foreground">No results found.</p>}
-
-                <div className="flex flex-col gap-4">
-                    {items.map((item) => (
-                        <MediaListItem key={`${item.id}`} item={item} type={'title' in item ? 'movie' : 'tv'} prefetch={false} />
-                    ))}
-                    {(isLoading && hasMore) && (
-                        <>
-                            <MediaListItemSkeleton />
-                            <MediaListItemSkeleton />
-                        </>
-                    )}
-                </div>
-                <div ref={loadMoreRef} className="h-10" />
-            </div>
-        </div>
+        <DiscoverPageContent
+            params={params}
+            pageData={pageData}
+            initialItems={initialItems}
+        />
     );
 }
 
-export default function DiscoverPage({ params }: DiscoverPageProps) {
-    return (
-        <Suspense fallback={<div className="py-12 px-4 sm:px-8 max-w-4xl mx-auto"><Skeleton className="h-10 w-1/2 mb-8" /></div>}>
-            <DiscoverPageContent params={params} />
-        </Suspense>
-    )
-}
+    

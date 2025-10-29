@@ -3,7 +3,7 @@
 
 import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { searchMulti } from '@/lib/tmdb';
+import { searchMulti } from '@/lib/tmdb-client';
 import type { SearchResult } from '@/lib/tmdb-schemas';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
 import { Skeleton } from '@/components/ui/skeleton';
