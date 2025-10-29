@@ -79,13 +79,13 @@ export function Hero({ item }: HeroProps) {
           </p>
           <div className="flex flex-wrap gap-4">
             <PlayerModal title={title} playerInfo={playerInfo}>
-                 <Button size="lg" className="font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-primary/30">
-                    <PlayCircle className="mr-2 h-7 w-7" />
-                    Play
-                </Button>
+              <Button size="lg" className="font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-primary/30">
+                <PlayCircle className="mr-2 h-7 w-7" />
+                Play
+              </Button>
             </PlayerModal>
             <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 text-white font-bold text-lg transition-all duration-300 hover:scale-105">
-              <Link href={`/${media_type}/${itemSlug}-${item.id}`}>
+              <Link href={`/${media_type}/${itemSlug}-${item.id}`} prefetch={false}>
                 <Info className="mr-2 h-5 w-5" />
                 More Info
               </Link>

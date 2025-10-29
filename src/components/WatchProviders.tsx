@@ -11,7 +11,7 @@ type WatchProvidersProps = {
 
 export function WatchProviders({ providers }: WatchProvidersProps) {
   const freeProviders = providers.free || [];
-  
+
   if (freeProviders.length === 0) {
     return null;
   }
@@ -21,7 +21,7 @@ export function WatchProviders({ providers }: WatchProvidersProps) {
       <h2 className="text-2xl font-bold mb-4">Available For Free On</h2>
       <div className="flex flex-wrap gap-4">
         {freeProviders.map(provider => (
-          <Link href={providers.link} key={provider.provider_id} target="_blank" rel="noopener noreferrer" className="group">
+          <Link href={providers.link} key={provider.provider_id} target="_blank" rel="noopener noreferrer" className="group" prefetch={false}>
             <div className="relative w-16 h-16 rounded-poster overflow-hidden transition-transform duration-300 group-hover:scale-110">
               <Image
                 src={`https://image.tmdb.org/t/p/w185${provider.logo_path}`}

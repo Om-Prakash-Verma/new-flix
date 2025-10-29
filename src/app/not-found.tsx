@@ -17,7 +17,7 @@ export default function NotFound() {
         Oops! The page you are looking for does not exist. It might have been moved or deleted.
       </p>
       <Button asChild size="lg">
-        <Link href="/">Go to Homepage</Link>
+        <Link href="/" prefetch={false}>Go to Homepage</Link>
       </Button>
     </div>
   );
