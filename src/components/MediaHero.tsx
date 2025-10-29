@@ -8,6 +8,7 @@ import { slugify, formatRuntime } from '@/lib/utils';
 import { StarRating } from '@/components/StarRating';
 import { Badge } from '@/components/ui/badge';
 import { PlayButton } from '@/components/PlayButton';
+import { ProductionCompanies } from './ProductionCompanies';
 
 type MediaHeroProps = {
     item: MovieDetails | TVShowDetails;
@@ -45,53 +46,63 @@ export function MediaHero({ item, type }: MediaHeroProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-background via-background/50 to-transparent" />
 
             <div className="relative z-10 flex h-full items-end py-8 md:py-12 px-4 sm:px-8">
-            <div className="w-full max-w-4xl text-center md:text-left">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-3 text-shadow-lg">
-                {title}
-                </h1>
-                {isMovie(item) && item.tagline && (
-                    <p className="text-lg italic text-muted-foreground mb-4 text-shadow">{item.tagline}</p>
-                )}
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 mb-4 text-shadow">
-                    <StarRating rating={item.vote_average} />
-                    {year && (
-                        <Link href={`/year/${year}`} className="text-sm hover:underline" prefetch={false}>{year}</Link>
+                <div className="w-full max-w-4xl text-center md:text-left">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-3 text-shadow-lg">
+                    {title}
+                    </h1>
+                    {isMovie(item) && item.tagline && (
+                        <p className="text-lg italic text-muted-foreground mb-4 text-shadow">{item.tagline}</p>
                     )}
-                    {runtime && <span className="text-sm text-muted-foreground">•</span>}
-                    {runtime && <span className="text-sm">{formatRuntime(runtime)}</span>}
-                </div>
-                <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-                {item.genres.map(genre => (
-                    <Link key={genre.id} href={`/genre/${slugify(genre.name)}-${genre.id}`} prefetch={false}>
-                        <Badge 
-                            variant="outline" 
-                            className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
-                            {genre.name}
-                        </Badge>
-                    </Link>
-                ))}
-                </div>
-                {uniqueCountries.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-                        {uniqueCountries.map(countryCode => (
-                            <Link key={countryCode} href={`/country/${countryCode}`} prefetch={false}>
-                                <Badge 
-                                    variant="outline" 
-                                    className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
-                                    {countryCode}
-                                </Badge>
-                            </Link>
-                        ))}
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 mb-4 text-shadow">
+                        <StarRating rating={item.vote_average} />
+                        {year && (
+                            <Link href={`/year/${year}`} className="text-sm hover:underline" prefetch={false}>{year}</Link>
+                        )}
+                        {runtime && <span className="text-sm text-muted-foreground">•</span>}
+                        {runtime && <span className="text-sm">{formatRuntime(runtime)}</span>}
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
+                    {item.genres.map(genre => (
+                        <Link key={genre.id} href={`/genre/${slugify(genre.name)}-${genre.id}`} prefetch={false}>
+                            <Badge 
+                                variant="outline" 
+                                className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
+                                {genre.name}
+                            </Badge>
+                        </Link>
+                    ))}
+                    </div>
+                    {uniqueCountries.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
+                            {uniqueCountries.map(countryCode => (
+                                <Link key={countryCode} href={`/country/${countryCode}`} prefetch={false}>
+                                    <Badge 
+                                        variant="outline" 
+                                        className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
+                                        {countryCode}
+                                    </Badge>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
 
-                <p className="text-sm md:text-base text-foreground/80 line-clamp-3 mb-8 max-w-2xl text-shadow mx-auto md:mx-0">
-                {item.overview}
-                </p>
-                <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                    <PlayButton {...playButtonProps} />
+                    <p className="text-sm md:text-base text-foreground/80 line-clamp-3 mb-8 max-w-2xl text-shadow mx-auto md:mx-0">
+                    {item.overview}
+                    </p>
+
+                    <div className="flex flex-col gap-8 items-center md:items-start justify-center md:justify-start">
+                         <div className="md:hidden">
+                            <ProductionCompanies companies={item.production_companies} />
+                        </div>
+                        <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
+                            <PlayButton {...playButtonProps} />
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <div className="hidden md:block absolute md:top-8 md:right-8 md:z-20">
+                <ProductionCompanies companies={item.production_companies} />
             </div>
         </div>
     );

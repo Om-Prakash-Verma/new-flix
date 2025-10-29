@@ -4,14 +4,14 @@
 
 @layer base {
   :root {
-    --background: 222 83% 4%;
+    --background: 0 0% 2%;
     --foreground: 210 40% 98%;
-    --card: 222 83% 4%;
+    --card: 0 0% 2%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 83% 4%;
+    --popover: 0 0% 2%;
     --popover-foreground: 210 40% 98%;
-    --primary: 48 99% 50%;
-    --primary-foreground: 220 85% 10%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 83% 4%;
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 0 86% 97%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 48 99% 50%;
+    --ring: 210 40% 98%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -31,14 +31,14 @@
   }
 
   .dark {
-    --background: 222 83% 4%;
+    --background: 0 0% 2%;
     --foreground: 210 40% 98%;
-    --card: 222 83% 4%;
+    --card: 0 0% 2%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 83% 4%;
+    --popover: 0 0% 2%;
     --popover-foreground: 210 40% 98%;
-    --primary: 48 99% 50%;
-    --primary-foreground: 220 85% 10%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 83% 4%;
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
@@ -49,7 +49,7 @@
     --destructive-foreground: 0 86% 97%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 48 99% 50%;
+    --ring: 210 40% 98%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -64,7 +64,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to bottom right, hsl(222, 83%, 4%), hsl(210, 40%, 6%));
+    background-image: linear-gradient(to bottom right, hsl(0, 0%, 2%), hsl(0, 0%, 6%));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

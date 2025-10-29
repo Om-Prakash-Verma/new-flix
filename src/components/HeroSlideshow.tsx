@@ -98,7 +98,7 @@ export function HeroSlideshow({ items }: HeroSlideshowProps) {
       </ShadcnCarousel>
 
       <div 
-        className="absolute bottom-8 right-8 z-20 w-[9vw] max-w-[90px] min-w-[60px] cursor-pointer group opacity-80 hover:opacity-100 transition-opacity"
+        className="hidden md:block absolute bottom-8 right-8 z-20 w-[9vw] max-w-[90px] min-w-[60px] cursor-pointer group opacity-80 hover:opacity-100 transition-opacity"
         onClick={scrollNext}
       >
         <div className="relative aspect-[2/3] shadow-lg transition-transform duration-300 ease-in-out group-hover:scale-105 rounded-poster overflow-hidden">

@@ -16,7 +16,6 @@ export function BackgroundImage({ posterUrl, backdropUrl }: BackgroundImageProps
     backgroundPosition: 'center top',
     backgroundRepeat: 'no-repeat',
     filter: 'blur(4px)',
-    transform: 'scale(1.1)',
   };
 
   return (

@@ -46,7 +46,7 @@ export function TrailersCarousel({ videos }: TrailersCarouselProps) {
           {displayVideos.map(video => (
             <CarouselItem key={video.id} className="pl-4 basis-full sm:basis-1/2 md:basis-auto md:w-[320px]">
               <div
-                className="group relative cursor-pointer rounded-poster overflow-hidden"
+                className="group relative cursor-pointer rounded-poster overflow-hidden shadow-lg"
                 onClick={() => handleVideoClick(video)}
               >
                 <Image
@@ -60,13 +60,15 @@ export function TrailersCarousel({ videos }: TrailersCarouselProps) {
                   sizes="(max-width: 640px) 100vw, 320px"
                   data-ai-hint="video trailer"
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <PlayCircle className="w-12 h-12 text-white/80 drop-shadow-lg opacity-80 group-hover:opacity-100 transition-opacity" />
+                  <PlayCircle className="w-16 h-16 text-white/80 drop-shadow-lg opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300" />
                 </div>
-                <p className="absolute bottom-2 left-2 text-white text-xs font-semibold line-clamp-1 text-shadow bg-black/30 px-2 py-1 rounded">
-                  {video.name}
-                </p>
+                <div className="absolute bottom-0 left-0 p-3 w-full">
+                  <p className="text-white text-sm font-bold line-clamp-1 text-shadow">
+                    {video.name}
+                  </p>
+                </div>
               </div>
             </CarouselItem>
           ))}
@@ -81,7 +83,7 @@ export function TrailersCarousel({ videos }: TrailersCarouselProps) {
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         {selectedVideo && (
-          <DialogContent className="bg-black/80 border-neutral-800 p-0 max-w-[80vw] w-full flex flex-col gap-0 rounded-lg overflow-hidden backdrop-blur-xl">
+          <DialogContent className="bg-black/80 border-neutral-800 p-0 max-w-screen-lg w-full flex flex-col gap-0 rounded-lg overflow-hidden backdrop-blur-xl">
              <DialogHeader className="p-4 flex-row justify-between items-center border-b border-neutral-700/80 space-y-0">
                 <DialogTitle className="text-lg line-clamp-1">{selectedVideo.name}</DialogTitle>
              </DialogHeader>

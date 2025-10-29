@@ -19,9 +19,9 @@ export function ProductionCompanies({ companies }: ProductionCompaniesProps) {
   }
 
   return (
-    <div className="md:absolute md:top-8 md:right-8 md:z-20 flex flex-col items-start md:items-end gap-4 px-4 sm:px-8 md:px-0">
+    <div className="flex flex-col items-center md:items-end gap-4">
         <h2 className="text-sm font-bold text-white text-shadow uppercase tracking-wider">Production</h2>
-        <div className="flex flex-row flex-wrap md:flex-col items-center md:items-end gap-4">
+        <div className="flex flex-row md:flex-col flex-wrap items-center justify-center md:items-end gap-4">
           {companiesWithLogos.slice(0, 3).map(company => ( // Limit to max 3 companies
             <Link 
               key={company.id} 
@@ -29,7 +29,7 @@ export function ProductionCompanies({ companies }: ProductionCompaniesProps) {
               className="group"
               prefetch={false}
             >
-              <div className="bg-black/30 backdrop-blur-md border border-white/10 p-2 h-14 w-28 flex items-center justify-center transition-colors group-hover:bg-black/50 rounded-lg overflow-hidden">
+              <div className="bg-white p-2 h-14 w-28 flex items-center justify-center transition-colors group-hover:bg-gray-200 rounded-lg overflow-hidden">
                 <div className="relative w-full h-full">
                   <Image
                     src={getPosterImage(company.logo_path, 'w185')}

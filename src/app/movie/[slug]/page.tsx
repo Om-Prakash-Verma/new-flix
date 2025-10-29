@@ -13,7 +13,6 @@ import { TrailersCarousel } from '@/components/TrailersCarousel';
 import { WatchProviders } from '@/components/WatchProviders';
 import { Recommendations } from '@/components/Recommendations';
 import { Reviews } from '@/components/Reviews';
-import { ProductionCompanies } from '@/components/ProductionCompanies';
 
 type MoviePageProps = {
   params: {
@@ -114,7 +113,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
       
       <div className="relative z-10">
         <MediaHero item={movie} type="movie" />
-        <ProductionCompanies companies={movie.production_companies} />
       </div>
 
       <div className="py-12 space-y-12 px-4 sm:px-8">
