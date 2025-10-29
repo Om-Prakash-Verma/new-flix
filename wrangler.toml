@@ -1,0 +1,7 @@
+
+name = "flix"
+compatibility_date = "2024-05-20"
+
+[pages]
+routes.include = ["/*"]
+routes.exclude = ["/favicon.ico", "/_next/*"]

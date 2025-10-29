@@ -1,0 +1,28 @@
+{
+  "placeholderImages": [
+    {
+      "id": "poster",
+      "description": "Placeholder for movie or TV show posters",
+      "imageUrl": "https://picsum.photos/seed/poster/500/750",
+      "imageHint": "movie poster"
+    },
+    {
+      "id": "backdrop",
+      "description": "Placeholder for movie or TV show backdrops",
+      "imageUrl": "https://picsum.photos/seed/backdrop/1280/720",
+      "imageHint": "movie scene"
+    },
+    {
+      "id": "profile",
+      "description": "Placeholder for actor profile pictures",
+      "imageUrl": "https://picsum.photos/seed/profile/185/278",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "cast",
+      "description": "Placeholder for cast member headshots",
+      "imageUrl": "https://picsum.photos/seed/cast/200/300",
+      "imageHint": "actor headshot"
+    }
+  ]
+}
