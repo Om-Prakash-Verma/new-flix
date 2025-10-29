@@ -43,7 +43,7 @@ export function CreditsCarousel({ credits, title }: CreditsCarouselProps) {
                 className="pl-4 basis-[140px] flex-grow-0 flex-shrink-0"
               >
                 <div className="group">
-                   <Link href={`/person/${slugify(person.name)}-${person.id}`}>
+                   <Link href={`/person/${slugify(person.name)}-${person.id}`} prefetch={false}>
                     <div className="aspect-[2/3] relative bg-muted transition-transform duration-300 ease-in-out group-hover:scale-105 shadow-md rounded-poster overflow-hidden">
                       <Image
                         src={getProfileImage(person.profile_path)}
@@ -58,7 +58,7 @@ export function CreditsCarousel({ credits, title }: CreditsCarouselProps) {
                     </div>
                   </Link>
                   <div className="mt-2 text-sm text-center">
-                    <Link href={`/person/${slugify(person.name)}-${person.id}`}>
+                    <Link href={`/person/${slugify(person.name)}-${person.id}`} prefetch={false}>
                       <h3 className="font-bold line-clamp-1 group-hover:text-primary transition-colors">
                         {person.name}
                       </h3>

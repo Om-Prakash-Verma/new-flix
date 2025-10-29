@@ -1,6 +1,5 @@
 
 import type { NextConfig } from 'next';
-import path from 'path';
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -31,10 +30,6 @@ const nextConfig: NextConfig = {
         pathname: '**',
       }
     ],
-  },
-  webpack: (config) => {
-    config.resolve.alias['next/link'] = path.resolve(__dirname, 'src/components/NoPrefetchLink.tsx');
-    return config;
   },
 };
 

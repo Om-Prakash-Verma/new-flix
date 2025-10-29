@@ -16,7 +16,7 @@ export function Header() {
       <div className="flex h-20 items-center px-4 sm:px-8">
         <div className="flex items-center">
           <MobileNav />
-          <Link href="/" className="mr-8 flex items-center space-x-2">
+          <Link href="/" className="mr-8 flex items-center space-x-2" prefetch={false}>
             <Film className="h-8 w-8 text-primary" />
             <span className="font-black text-2xl sm:inline-block tracking-tighter">{siteConfig.name}</span>
           </Link>
@@ -26,6 +26,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className="transition-colors text-foreground/70 hover:text-foreground"
+                prefetch={false}
               >
                 {item.title}
               </Link>
@@ -55,7 +56,7 @@ function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="bg-background/90 backdrop-blur-lg">
         <div className="flex flex-col h-full p-4">
-          <Link href="/" className="mb-8 flex items-center space-x-2">
+          <Link href="/" className="mb-8 flex items-center space-x-2" prefetch={false}>
              <Film className="h-8 w-8 text-primary" />
              <span className="font-black text-2xl tracking-tighter">{siteConfig.name}</span>
           </Link>
@@ -65,6 +66,7 @@ function MobileNav() {
                 <Link
                   href={item.href}
                   className="text-lg font-semibold text-foreground/80 hover:text-primary transition-colors"
+                  prefetch={false}
                 >
                   {item.title}
                 </Link>

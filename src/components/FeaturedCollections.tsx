@@ -67,7 +67,7 @@ function InternalCollectionCard({ collection }: { collection: CollectionDetails 
   const movieCount = collection.parts.length;
 
   return (
-    <Link href={href} className="block group">
+    <Link href={href} className="block group" prefetch={false}>
       <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 ease-in-out group-hover:scale-105 group-hover:shadow-primary/30">
         <Image
           src={getBackdropImage(collection.backdrop_path)}

@@ -22,7 +22,7 @@ export function ProductionCompanies({ companies }: ProductionCompaniesProps) {
       <h2 className="text-sm font-bold text-white text-shadow uppercase tracking-wider">Production</h2>
       <div className="flex flex-row flex-wrap md:flex-col items-center md:items-end gap-4">
         {companiesWithLogos.slice(0, 4).map(company => (
-          <Link key={company.id} href={`/company/${slugify(company.name)}-${company.id}`} className="group">
+          <Link key={company.id} href={`/company/${slugify(company.name)}-${company.id}`} className="group" prefetch={false}>
             <Card className="bg-green-400/80 backdrop-blur-md border-white/10 p-2 h-14 w-28 flex items-center justify-center transition-colors group-hover:bg-green-300/80 rounded-lg overflow-hidden">
               <div className="relative w-full h-full">
                 <Image

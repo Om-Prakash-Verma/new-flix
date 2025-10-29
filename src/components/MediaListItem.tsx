@@ -25,7 +25,7 @@ export function MediaListItem({ item, type }: MediaListItemProps) {
   const itemSlug = slugify(title);
 
   return (
-    <Link href={`/${type}/${itemSlug}-${item.id}`} className="block group">
+    <Link href={`/${type}/${itemSlug}-${item.id}`} className="block group" prefetch={false}>
       <Card className="flex items-start gap-4 p-3 bg-card/80 hover:bg-muted/50 transition-all duration-300 rounded-lg h-full">
         <div className="w-24 md:w-28 flex-shrink-0">
           <div className="aspect-[2/3] relative rounded-md overflow-hidden bg-muted/50">

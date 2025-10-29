@@ -3,25 +3,25 @@
     {
       "id": "poster",
       "description": "Placeholder for movie or TV show posters",
-      "imageUrl": "https://picsum.photos/seed/poster/500/750",
+      "imageUrl": "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb3ZpZSUyMHBvc3RlcnxlbnwwfHx8fDE3NjE2OTg4MjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "movie poster"
     },
     {
       "id": "backdrop",
       "description": "Placeholder for movie or TV show backdrops",
-      "imageUrl": "https://picsum.photos/seed/backdrop/1280/720",
+      "imageUrl": "https://images.unsplash.com/photo-1635058157301-b69bb0b08c83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb3ZpZSUyMHNjZW5lfGVufDB8fHx8MTc2MTY1ODUxMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "movie scene"
     },
     {
       "id": "profile",
       "description": "Placeholder for actor profile pictures",
-      "imageUrl": "https://picsum.photos/seed/profile/185/278",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjE2NjU3ODF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
     },
     {
       "id": "cast",
       "description": "Placeholder for cast member headshots",
-      "imageUrl": "https://picsum.photos/seed/cast/200/300",
+      "imageUrl": "https://images.unsplash.com/photo-1633003678894-b46c9aa7dcae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhY3RvciUyMGhlYWRzaG90fGVufDB8fHx8MTc2MTY5NzAwNnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "actor headshot"
     }
   ]

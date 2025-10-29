@@ -23,7 +23,7 @@ export function PosterCard({ item, type, imageSize = 'w342' }: PosterCardProps) 
   const itemSlug = slugify(title);
 
   return (
-    <Link href={`/${type}/${itemSlug}-${item.id}`} className="block group">
+    <Link href={`/${type}/${itemSlug}-${item.id}`} className="block group" prefetch={false}>
         <div className="aspect-[2/3] relative bg-muted/50 transition-transform duration-300 ease-in-out group-hover:scale-105 shadow-md rounded-poster overflow-hidden">
             <Image
             src={getPosterImage(item.poster_path, imageSize)}
