@@ -47,6 +47,8 @@ async function fetchTMDB<T>(path: string, params: Record<string, string | number
   });
 
   try {
+    // We can't use Next.js fetch cache in client components, but this function is used by server too.
+    // When called from the client, it will behave like a normal fetch.
     const res = await fetch(url.toString(), {
       next: { revalidate: 3600 }, // Revalidate every hour
     });
@@ -68,6 +70,27 @@ async function fetchTMDB<T>(path: string, params: Record<string, string | number
   }
 }
 
+// Client-side fetch function that calls our proxy
+async function fetchFromProxyAPI<T>(path: string, params: Record<string, string | number> = {}, schema: z.ZodSchema<T>): Promise<T> {
+  const url = new URL(`/api/tmdb/${path}`, window.location.origin);
+  
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.append(key, String(value));
+  });
+
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    throw new Error(`Failed to fetch from proxy API: ${res.statusText}`);
+  }
+  const data = await res.json();
+  const parsed = schema.safeParse(data);
+  if (parsed.success) {
+    return parsed.data;
+  }
+  throw new Error(`Failed to parse proxy API response: ${parsed.error}`);
+}
+
+
 // Common function for paged responses
 async function fetchPagedData<T extends z.ZodTypeAny>(path: string, params: Record<string, string | number>, itemSchema: T) {
   const schema = pagedResponseSchema(itemSchema);
@@ -75,6 +98,12 @@ async function fetchPagedData<T extends z.ZodTypeAny>(path: string, params: Reco
   return data ?? { results: [], total_pages: 0, page: 1, total_results: 0 };
 }
 
+// Common function for paged responses from proxy
+async function fetchPagedDataFromProxy<T extends z.ZodTypeAny>(path: string, params: Record<string, string | number>, itemSchema: T) {
+  const schema = pagedResponseSchema(itemSchema);
+  const data = await fetchFromProxyAPI(path, params, schema);
+  return data;
+}
 
 // --- Server and Client Functions ---
 
@@ -125,30 +154,74 @@ export async function getCollectionDetails(id: string | number): Promise<Collect
   return fetchTMDB(`collection/${id}`, {}, collectionDetailsSchema);
 }
 
-// --- Paged Functions ---
+// --- Client-Side Paged Functions (using proxy) ---
+
 export async function searchMulti(query: string, page: number = 1) {
-  const data = await fetchPagedData('search/multi', { query, page: String(page) }, searchResultSchema);
+  const data = await fetchPagedDataFromProxy('search/multi', { query, page: String(page) }, searchResultSchema);
   // Filter out people from the results, we only want movies and tv shows
   data.results = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
   return data;
 }
+
+export const discoverMovies = (params: Record<string, string | number>) => fetchPagedDataFromProxy('discover/movie', params, movieSchema);
+export const discoverTVShows = (params: Record<string, string | number>) => fetchPagedDataFromProxy('discover/tv', params, tvSchema);
+
+type FetchCombinedMediaParams = {
+    discoveryType: 'genre' | 'year' | 'country';
+    id: string;
+    page: number;
+};
+export async function fetchCombinedMedia({discoveryType, id, page}: FetchCombinedMediaParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+    const moviePage = Math.floor(page / 2) + 1;
+    const tvPage = Math.floor((page + 1) / 2);
+
+    const [movieData, tvData] = await Promise.all([
+        (async () => {
+            switch (discoveryType) {
+                case 'genre': return discoverMoviesByGenre(id, moviePage);
+                case 'year': return discoverMoviesByYear(id, moviePage);
+                case 'country': return discoverMoviesByCountry(id, moviePage);
+                default: return { results: [], total_pages: 0, page: 1, total_results: 0 };
+            }
+        })(),
+        (async () => {
+            switch (discoveryType) {
+                case 'genre': return discoverTVByGenre(id, tvPage);
+                case 'year': return discoverTVByYear(id, tvPage);
+                case 'country': return discoverTVByCountry(id, tvPage);
+                default: return { results: [], total_pages: 0, page: 1, total_results: 0 };
+            }
+        })()
+    ]);
+    
+    const combinedResults = [
+        ...movieData.results.map(item => ({ ...item, media_type: 'movie' as const })),
+        ...tvData.results.map(item => ({ ...item, media_type: 'tv' as const }))
+    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+    return { 
+        results: combinedResults,
+        total_pages: Math.max(movieData.total_pages, tvData.total_pages) * 2
+    };
+}
+
+
+// --- Paged Functions ---
 export const searchMovies = (query: string, page: number = 1) => fetchPagedData('search/movie', { query, page: String(page) }, movieSchema);
 export const searchTV = (query: string, page: number = 1) => fetchPagedData('search/tv', { query, page: String(page) }, tvSchema);
 
-export const discoverMovies = (params: Record<string, string | number>) => fetchPagedData('discover/movie', params, movieSchema);
-export const discoverTVShows = (params: Record<string, string | number>) => fetchPagedData('discover/tv', params, tvSchema);
 
 export const discoverMoviesByCompany = (companyId: string | number, page = 1) => fetchPagedData('discover/movie', { with_companies: String(companyId), page: String(page) }, movieSchema);
 export const discoverTVByCompany = (companyId: string | number, page = 1) => fetchPagedData('discover/tv', { with_companies: String(companyId), page: String(page) }, tvSchema);
 
-export const discoverMoviesByGenre = (genreId: number | string, page = 1) => fetchPagedData('discover/movie', { with_genres: String(genreId), page: String(page) }, movieSchema);
-export const discoverTVByGenre = (genreId: number | string, page = 1) => fetchPagedData('discover/tv', { with_genres: String(genreId), page: String(page) }, tvSchema);
+export const discoverMoviesByGenre = (genreId: number | string, page = 1) => fetchPagedDataFromProxy('discover/movie', { with_genres: String(genreId), page: String(page) }, movieSchema);
+export const discoverTVByGenre = (genreId: number | string, page = 1) => fetchPagedDataFromProxy('discover/tv', { with_genres: String(genreId), page: String(page) }, tvSchema);
 
-export const discoverMoviesByCountry = (countryCode: string, page = 1) => fetchPagedData('discover/movie', { with_origin_country: countryCode, page: String(page) }, movieSchema);
-export const discoverTVByCountry = (countryCode: string, page = 1) => fetchPagedData('discover/tv', { with_origin_country: countryCode, page: String(page) }, tvSchema);
+export const discoverMoviesByCountry = (countryCode: string, page = 1) => fetchPagedDataFromProxy('discover/movie', { with_origin_country: countryCode, page: String(page) }, movieSchema);
+export const discoverTVByCountry = (countryCode: string, page = 1) => fetchPagedDataFromProxy('discover/tv', { with_origin_country: countryCode, page: String(page) }, tvSchema);
 
-export const discoverMoviesByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedData('discover/movie', { primary_release_year: year, page: String(page), ...otherParams }, movieSchema);
-export const discoverTVByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedData('discover/tv', { first_air_date_year: year, page: String(page), ...otherParams }, tvSchema);
+export const discoverMoviesByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedDataFromProxy('discover/movie', { primary_release_year: year, page: String(page), ...otherParams }, movieSchema);
+export const discoverTVByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedDataFromProxy('discover/tv', { first_air_date_year: year, page: String(page), ...otherParams }, tvSchema);
 
 export const getMovieRecommendations = (movieId: number | string, page = 1) => fetchPagedData(`movie/${movieId}/recommendations`, { page: String(page) }, movieSchema);
 export const getTvRecommendations = (tvId: number | string, page = 1) => fetchPagedData(`tv/${tvId}/recommendations`, { page: String(page) }, tvSchema);
