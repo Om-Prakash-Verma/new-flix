@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useInView } from 'react-intersection-observer';
 import { siteConfig } from '@/config/site';
 import { extractIdFromSlug } from '@/lib/utils';
-
+export const runtime = 'edge';
 type DiscoverPageProps = {
     params: {
         type: 'genre' | 'year' | 'country';
