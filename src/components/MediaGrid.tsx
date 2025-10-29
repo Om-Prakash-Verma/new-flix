@@ -11,19 +11,25 @@ type MediaGridProps = {
     initialItems: (Movie | TVShow)[];
     type: 'movie' | 'tv';
     imageSize?: 'w185' | 'w342';
+    initialLoading?: boolean;
     fetcher?: (page: number) => Promise<{ results: (Movie | TVShow)[]; total_pages: number; }>;
+    initialPage?: number;
+    initialTotalPages?: number;
 };
 
-export function MediaGrid({
-    initialItems = [],
-    type,
+export function MediaGrid({ 
+    initialItems = [], 
+    type, 
     imageSize,
+    initialLoading = false,
     fetcher,
+    initialPage = 1,
+    initialTotalPages = 1
 }: MediaGridProps) {
-
+    
     const [items, setItems] = useState(initialItems);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [page, setPage] = useState(initialPage);
+    const [totalPages, setTotalPages] = useState(initialTotalPages);
     const [isLoading, setIsLoading] = useState(false);
     const hasMore = page < totalPages;
 
@@ -53,13 +59,17 @@ export function MediaGrid({
             loadMore();
         }
     }, [inView, loadMore]);
-
+    
     // Reset state when initial items change (e.g. from a filter in MediaBrowser)
     useEffect(() => {
         setItems(initialItems);
-        setPage(1);
-        setTotalPages(1); // will be updated on first fetch if fetcher exists
-    }, [initialItems]);
+        setPage(initialPage);
+        setTotalPages(initialTotalPages);
+    }, [initialItems, initialPage, initialTotalPages]);
+
+    if (initialLoading) {
+        return <MediaGridSkeleton />;
+    }
 
     if (items.length === 0 && !isLoading) {
         return <p className="text-muted-foreground text-center col-span-full">No items found.</p>;
@@ -69,16 +79,16 @@ export function MediaGrid({
         <>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-6 gap-y-8">
                 {items.map((item, index) => (
-                    <PosterCard key={`${item.id}-${index}`} item={item} type={type} imageSize={imageSize} prefetch={false} />
+                    <PosterCard key={`${item.id}-${index}`} item={item} type={type} imageSize={imageSize} />
                 ))}
                 {/* Skeletons are shown while loading more items */}
-                {isLoading && [...Array(6)].map((_, i) => <PosterCardSkeleton key={`loading-${i}`} />)}
+                {isLoading && !initialLoading && [...Array(6)].map((_, i) => <PosterCardSkeleton key={`loading-${i}`} />)}
             </div>
 
             <div ref={ref} className="h-10 flex justify-center items-center mt-8">
-                {isLoading ? (
+                {isLoading && !initialLoading ? (
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                ) : !hasMore && items.length > 0 && fetcher ? (
+                ) : !hasMore && items.length > 0 ? (
                     <p className="text-muted-foreground">You've reached the end.</p>
                 ) : null}
             </div>

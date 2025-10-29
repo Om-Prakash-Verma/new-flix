@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { discoverMoviesByCompany, discoverTVByCompany } from '@/lib/tmdb-client';
+import { discoverMoviesByCompany, discoverTVByCompany } from '@/lib/tmdb';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { MediaGrid, MediaGridSkeleton } from '@/components/MediaGrid';
 import { Loader2 } from 'lucide-react';
@@ -123,6 +123,7 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
       <MediaGrid
         initialItems={items}
         type="movie"
+        initialLoading={false}
       />
       <div ref={ref} className="h-10 flex justify-center items-center mt-8">
         {isLoading ? (
