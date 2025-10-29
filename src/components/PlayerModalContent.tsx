@@ -2,22 +2,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from './ui/button';
-import { Loader2, Server, X, AlertTriangle } from 'lucide-react';
+import { DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from './ui/skeleton';
 import { serverList } from '@/lib/serverList';
 import { getExternalIds } from '@/actions/tmdb';
-import { Badge } from './ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { getEmbedFallback } from '@/lib/embed-fallback';
 import { useToast } from '@/hooks/use-toast';
+import { PlayerUI } from './PlayerUI';
 
 
 export type PlayerModalInfo = {
@@ -126,46 +117,9 @@ export default function PlayerModalContent({ title, playerInfo, onClose }: Playe
   }, [currentServer, playerInfo, toast]);
   
   return (
-      <DialogContent className="bg-black/80 border-neutral-800 p-0 max-w-[90vw] h-[90vh] flex flex-col gap-0 rounded-lg overflow-hidden backdrop-blur-xl">
-        <DialogHeader className="p-4 flex-row justify-between items-center border-b border-neutral-700/80 space-y-0">
-          <DialogTitle className="text-lg line-clamp-1">{title}</DialogTitle>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Badge variant="secondary" className="hidden sm:block">{currentServer.name}</Badge>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" disabled={isLoadingServer}>
-                  {isLoadingServer ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Server className="mr-2 h-4 w-4" />
-                  )}
-                  <span className="hidden md:inline">Change Server</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64">
-                <DropdownMenuRadioGroup value={currentServer.name} onValueChange={handleServerChange}>
-                  {serverList.map((server) => (
-                    <DropdownMenuRadioItem key={server.id} value={server.name} className="flex justify-between">
-                      <span>{server.name}</span>
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button variant="ghost" size="sm" onClick={handleFallback} title="Try next server">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                <span className="hidden md:inline">Report Broken</span>
-            </Button>
-
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={onClose}>
-                <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </DialogHeader>
-
-        <div className="flex-grow bg-black/50 relative">
+      <DialogContent className="bg-black border-none p-0 max-w-full w-full h-full flex flex-col gap-0 rounded-none">
+        <DialogTitle className="sr-only">{`Player for ${title}`}</DialogTitle>
+        <div className="flex-grow bg-black relative group/player">
           {(isIframeLoading || isLoadingServer) && <Skeleton className="absolute inset-0" />}
           {currentUrl && !isLoadingServer && (
              <iframe
@@ -178,7 +132,20 @@ export default function PlayerModalContent({ title, playerInfo, onClose }: Playe
                 allowFullScreen
             />
           )}
+
+          <PlayerUI
+            title={title}
+            tmdbId={playerInfo.tmdbId}
+            mediaType={playerInfo.type}
+            onClose={onClose}
+            currentServer={currentServer}
+            serverList={serverList}
+            onServerChange={handleServerChange}
+            onReportBroken={handleFallback}
+            isLoading={isLoadingServer}
+          />
         </div>
       </DialogContent>
   );
 }
+
