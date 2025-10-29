@@ -13,6 +13,7 @@ import { TrailersCarousel } from '@/components/TrailersCarousel';
 import { WatchProviders } from '@/components/WatchProviders';
 import { Recommendations } from '@/components/Recommendations';
 import { Reviews } from '@/components/Reviews';
+import { ProductionCompanies } from '@/components/ProductionCompanies';
 
 type MoviePageProps = {
   params: {
@@ -120,6 +121,13 @@ export default async function MoviePage({ params }: MoviePageProps) {
         <TrailersCarousel videos={movie.videos?.results || []} />
         
         <CreditsCarousel credits={movie.credits.cast} title="Cast" />
+
+        {movie.production_companies && movie.production_companies.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Production Companies</h2>
+            <ProductionCompanies companies={movie.production_companies} />
+          </section>
+        )}
 
         <Recommendations id={movie.id} type="movie" initialData={recommendations} />
 

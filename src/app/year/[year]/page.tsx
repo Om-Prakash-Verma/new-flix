@@ -10,7 +10,9 @@ import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem
 import { Skeleton } from '@/components/ui/skeleton';
 import { MediaListSkeleton } from '@/components/MediaList';
 import { siteConfig } from '@/config/site';
+
 export const runtime = 'edge';
+
 type MediaItem = Movie | TVShow;
 
 function YearPageContent() {
@@ -30,8 +32,8 @@ function YearPageContent() {
         </>
       ) : (
         <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-          <h1 className="text-3xl font-bold">Invalid Year</h1>
-          <p className="text-muted-foreground mt-2">Please provide a valid year to browse content.</p>
+            <h1 className="text-3xl font-bold">Invalid Year</h1>
+            <p className="text-muted-foreground mt-2">Please provide a valid year to browse content.</p>
         </div>
       )}
     </div>
@@ -39,20 +41,20 @@ function YearPageContent() {
 }
 
 export default function YearPage() {
-  return (
-    <Suspense fallback={<YearPageSkeleton />}>
-      <YearPageContent />
-    </Suspense>
-  )
+    return (
+        <Suspense fallback={<YearPageSkeleton />}>
+            <YearPageContent />
+        </Suspense>
+    )
 }
 
 function YearPageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-      <Skeleton className="h-10 w-1/2 mb-8" />
-      <MediaListSkeleton />
-    </div>
-  )
+    return (
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+             <Skeleton className="h-10 w-1/2 mb-8" />
+             <MediaListSkeleton />
+        </div>
+    )
 }
 
 function YearResults({ year }: { year: string }) {

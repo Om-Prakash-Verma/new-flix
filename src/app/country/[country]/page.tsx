@@ -11,7 +11,9 @@ import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem
 import { Skeleton } from '@/components/ui/skeleton';
 import { MediaListSkeleton } from '@/components/MediaList';
 import { siteConfig } from '@/config/site';
+
 export const runtime = 'edge';
+
 type MediaItem = Movie | TVShow;
 
 function CountryPageContent() {
@@ -21,10 +23,10 @@ function CountryPageContent() {
 
   useEffect(() => {
     async function fetchCountryName() {
-      if (countryCode) {
-        const name = await getCountryName(countryCode);
-        setCountryName(name || countryCode);
-      }
+        if (countryCode) {
+            const name = await getCountryName(countryCode);
+            setCountryName(name || countryCode);
+        }
     }
     fetchCountryName();
   }, [countryCode]);
@@ -42,8 +44,8 @@ function CountryPageContent() {
         </>
       ) : (
         <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-          <h1 className="text-3xl font-bold">Invalid Country</h1>
-          <p className="text-muted-foreground mt-2">Please provide a valid country code to browse content.</p>
+            <h1 className="text-3xl font-bold">Invalid Country</h1>
+            <p className="text-muted-foreground mt-2">Please provide a valid country code to browse content.</p>
         </div>
       )}
     </div>
@@ -51,20 +53,20 @@ function CountryPageContent() {
 }
 
 export default function CountryPage() {
-  return (
-    <Suspense fallback={<CountryPageSkeleton />}>
-      <CountryPageContent />
-    </Suspense>
-  )
+    return (
+        <Suspense fallback={<CountryPageSkeleton />}>
+            <CountryPageContent />
+        </Suspense>
+    )
 }
 
 function CountryPageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-      <Skeleton className="h-10 w-1/2 mb-8" />
-      <MediaListSkeleton />
-    </div>
-  )
+    return (
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+             <Skeleton className="h-10 w-1/2 mb-8" />
+             <MediaListSkeleton />
+        </div>
+    )
 }
 
 function CountryResults({ countryCode }: { countryCode: string }) {

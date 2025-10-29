@@ -14,6 +14,7 @@ import { TrailersCarousel } from '@/components/TrailersCarousel';
 import { WatchProviders } from '@/components/WatchProviders';
 import { Recommendations } from '@/components/Recommendations';
 import { Reviews } from '@/components/Reviews';
+import { ProductionCompanies } from '@/components/ProductionCompanies';
 
 type TVShowPageProps = {
   params: {
@@ -132,6 +133,13 @@ export default async function TVShowPage({ params }: TVShowPageProps) {
         />
 
         <CreditsCarousel credits={show.credits.cast} title="Cast" />
+        
+        {show.production_companies && show.production_companies.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Production Companies</h2>
+            <ProductionCompanies companies={show.production_companies} />
+          </section>
+        )}
 
         <Recommendations id={show.id} type="tv" initialData={recommendations} />
 

@@ -89,6 +89,17 @@ export const productionCompanySchema = z.object({
 });
 export type ProductionCompany = z.infer<typeof productionCompanySchema>;
 
+export const companyDetailsSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    logo_path: z.string().nullable(),
+    origin_country: z.string(),
+    headquarters: z.string(),
+    homepage: z.string(),
+    description: z.string(),
+});
+export type CompanyDetails = z.infer<typeof companyDetailsSchema>;
+
 export const externalIdsSchema = z.object({
     imdb_id: z.string().nullable(),
     // Add other IDs as needed, e.g., facebook_id, instagram_id, etc.
@@ -207,17 +218,6 @@ export const personDetailsSchema = personSchema.extend({
     }).optional(),
 });
 export type PersonDetails = z.infer<typeof personDetailsSchema>;
-
-export const companyDetailsSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    logo_path: z.string().nullable(),
-    origin_country: z.string(),
-    description: z.string().nullable(),
-    homepage: z.string().nullable(),
-    headquarters: z.string().nullable(),
-});
-export type CompanyDetails = z.infer<typeof companyDetailsSchema>;
 
 export const collectionDetailsSchema = z.object({
     id: z.number(),

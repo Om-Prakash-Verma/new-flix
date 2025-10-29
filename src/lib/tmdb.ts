@@ -10,22 +10,22 @@ import {
   tvDetailsSchema,
   personDetailsSchema,
   genreDetailSchema,
-  companyDetailsSchema,
   externalIdsSchema,
   watchProvidersSchema,
   collectionDetailsSchema,
   reviewSchema,
+  companyDetailsSchema,
   type Movie,
   type TVShow,
   type MovieDetails,
   type TVShowDetails,
   type SeasonDetails,
   type PersonDetails,
-  type CompanyDetails,
   type ExternalIds,
   type WatchProviders,
   type SearchResult,
   type CollectionDetails,
+  type CompanyDetails,
 } from './tmdb-schemas';
 import { z } from 'zod';
 
@@ -108,10 +108,6 @@ export async function getPersonDetails(id: string | number): Promise<PersonDetai
   return data;
 }
 
-export async function getCompanyDetails(id: string | number): Promise<CompanyDetails | null> {
-  return fetchTMDB(`company/${id}`, {}, companyDetailsSchema);
-}
-
 export async function getExternalIds(mediaType: 'movie' | 'tv', tmdbId: string | number): Promise<ExternalIds | null> {
   return fetchTMDB(`${mediaType}/${tmdbId}/external_ids`, {}, externalIdsSchema);
 }
@@ -123,6 +119,10 @@ export async function getWatchProviders(mediaType: 'movie' | 'tv', tmdbId: strin
 
 export async function getCollectionDetails(id: string | number): Promise<CollectionDetails | null> {
   return fetchTMDB(`collection/${id}`, {}, collectionDetailsSchema);
+}
+
+export async function getCompanyDetails(id: string | number): Promise<CompanyDetails | null> {
+  return fetchTMDB(`company/${id}`, {}, companyDetailsSchema);
 }
 
 // --- Paged Functions ---
@@ -138,14 +138,14 @@ export const searchTV = (query: string, page: number = 1) => fetchPagedData('sea
 export const discoverMovies = (params: Record<string, string | number>) => fetchPagedData('discover/movie', params, movieSchema);
 export const discoverTVShows = (params: Record<string, string | number>) => fetchPagedData('discover/tv', params, tvSchema);
 
-export const discoverMoviesByCompany = (companyId: string | number, page = 1) => fetchPagedData('discover/movie', { with_companies: String(companyId), page: String(page) }, movieSchema);
-export const discoverTVByCompany = (companyId: string | number, page = 1) => fetchPagedData('discover/tv', { with_companies: String(companyId), page: String(page) }, tvSchema);
-
 export const discoverMoviesByGenre = (genreId: number | string, page = 1) => fetchPagedData('discover/movie', { with_genres: String(genreId), page: String(page) }, movieSchema);
 export const discoverTVByGenre = (genreId: number | string, page = 1) => fetchPagedData('discover/tv', { with_genres: String(genreId), page: String(page) }, tvSchema);
 
 export const discoverMoviesByCountry = (countryCode: string, page = 1) => fetchPagedData('discover/movie', { with_origin_country: countryCode, page: String(page) }, movieSchema);
 export const discoverTVByCountry = (countryCode: string, page = 1) => fetchPagedData('discover/tv', { with_origin_country: countryCode, page: String(page) }, tvSchema);
+
+export const discoverMoviesByCompany = (companyId: number | string, page = 1) => fetchPagedData('discover/movie', { with_companies: String(companyId), page: String(page) }, movieSchema);
+export const discoverTVByCompany = (companyId: number | string, page = 1) => fetchPagedData('discover/tv', { with_companies: String(companyId), page: String(page) }, tvSchema);
 
 export const discoverMoviesByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedData('discover/movie', { primary_release_year: year, page: String(page), ...otherParams }, movieSchema);
 export const discoverTVByYear = (year: string, page = 1, otherParams: Record<string, string> = {}) => fetchPagedData('discover/tv', { first_air_date_year: year, page: String(page), ...otherParams }, tvSchema);
@@ -257,3 +257,4 @@ export const fetchAllHomepageData = async () => {
     trendingTVShows: trendingTVShows.results,
   };
 };
+

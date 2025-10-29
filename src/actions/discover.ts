@@ -1,7 +1,7 @@
 
 'use server';
 
-import { discoverMoviesByGenre, discoverTVByGenre, discoverMoviesByYear, discoverTVByYear, discoverMoviesByCountry, discoverTVByCountry } from "@/lib/tmdb";
+import { discoverMovies, discoverTVShows, discoverMoviesByGenre, discoverTVByGenre, discoverMoviesByYear, discoverTVByYear, discoverMoviesByCountry, discoverTVByCountry, discoverMoviesByCompany, discoverTVByCompany } from "@/lib/tmdb";
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 
 type SortOption = 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'first_air_date.desc';
@@ -92,6 +92,27 @@ export async function fetchMediaByCountry({ countryCode, page }: FetchMediaByCou
     const [movieData, tvData] = await Promise.all([
         discoverMoviesByCountry(countryCode, page),
         discoverTVByCountry(countryCode, page)
+    ]);
+
+    const results = [
+        ...movieData.results,
+        ...tvData.results
+    ];
+    
+    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+    return { results, total_pages };
+}
+
+type FetchMediaByCompanyParams = {
+    companyId: string;
+    page: number;
+}
+
+export async function fetchMediaByCompany({ companyId, page }: FetchMediaByCompanyParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+    const [movieData, tvData] = await Promise.all([
+        discoverMoviesByCompany(companyId, page),
+        discoverTVByCompany(companyId, page)
     ]);
 
     const results = [

@@ -8,7 +8,6 @@ import { slugify, formatRuntime } from '@/lib/utils';
 import { StarRating } from '@/components/StarRating';
 import { Badge } from '@/components/ui/badge';
 import { PlayButton } from '@/components/PlayButton';
-import { ProductionCompanies } from '@/components/ProductionCompanies';
 
 type MediaHeroProps = {
     item: MovieDetails | TVShowDetails;
@@ -85,10 +84,6 @@ export function MediaHero({ item, type }: MediaHeroProps) {
                         ))}
                     </div>
                 )}
-
-                <div className="my-6">
-                  <ProductionCompanies companies={item.production_companies} />
-                </div>
 
                 <p className="text-sm md:text-base text-foreground/80 line-clamp-3 mb-8 max-w-2xl text-shadow mx-auto md:mx-0">
                 {item.overview}

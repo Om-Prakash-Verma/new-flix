@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense } from 'react';
@@ -6,7 +7,9 @@ import { extractIdFromSlug } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GenreResults } from '@/components/GenreResults';
 import { siteConfig } from '@/config/site';
+
 export const runtime = 'edge';
+
 function GenrePageContent() {
   const params = useParams();
   const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
@@ -26,8 +29,8 @@ function GenrePageContent() {
         </>
       ) : (
         <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-          <h1 className="text-3xl font-bold">Genre Not Found</h1>
-          <p className="text-muted-foreground mt-2">Could not find movies or TV shows for this genre.</p>
+            <h1 className="text-3xl font-bold">Genre Not Found</h1>
+            <p className="text-muted-foreground mt-2">Could not find movies or TV shows for this genre.</p>
         </div>
       )}
     </div>
@@ -35,20 +38,20 @@ function GenrePageContent() {
 }
 
 export default function GenrePage() {
-  return (
-    <Suspense fallback={<GenrePageSkeleton />}>
-      <GenrePageContent />
-    </Suspense>
-  )
+    return (
+        <Suspense fallback={<GenrePageSkeleton />}>
+            <GenrePageContent />
+        </Suspense>
+    )
 }
 
 function GenrePageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-      <Skeleton className="h-10 w-1/2 mb-8" />
-      <div className="flex flex-col gap-4">
-        {[...Array(8)].map((_, i) => <Skeleton key={`skel-${i}`} className="h-[182px] w-full" />)}
-      </div>
-    </div>
-  )
+    return (
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+             <Skeleton className="h-10 w-1/2 mb-8" />
+             <div className="flex flex-col gap-4">
+                {[...Array(8)].map((_, i) => <Skeleton key={`skel-${i}`} className="h-[182px] w-full" />)}
+            </div>
+        </div>
+    )
 }

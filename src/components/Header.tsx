@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Film, Menu, Search, Dices } from 'lucide-react';
 import { SearchInput } from './SearchInput';
 import { siteConfig } from '@/config/site';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { SurpriseMeButton } from './SurpriseMeButton';
@@ -55,6 +55,9 @@ function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="bg-background/90 backdrop-blur-lg">
+        <SheetHeader className="sr-only">
+          <SheetTitle>Main Navigation</SheetTitle>
+        </SheetHeader>
         <div className="flex flex-col h-full p-4">
           <Link href="/" className="mb-8 flex items-center space-x-2" prefetch={false}>
              <Film className="h-8 w-8 text-primary" />
