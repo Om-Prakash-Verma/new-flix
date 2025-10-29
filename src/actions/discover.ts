@@ -1,6 +1,7 @@
+
 'use server';
 
-import { discoverMovies, discoverTVShows, discoverMoviesByGenre, discoverTVByGenre, discoverMoviesByYear, discoverTVByYear, discoverMoviesByCountry, discoverTVByCountry } from "@/lib/tmdb";
+import { discoverMoviesByGenre, discoverTVByGenre, discoverMoviesByYear, discoverTVByYear, discoverMoviesByCountry, discoverTVByCountry } from "@/lib/tmdb";
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 
 type SortOption = 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'first_air_date.desc';
@@ -9,16 +10,10 @@ type FetchDiscoverMediaParams = {
     type: 'movie' | 'tv';
     page: number;
     filters: {
-        genre: string;
-        year: string;
+        genre?: string;
+        year?: string;
         sort: SortOption;
     }
-};
-
-type FetchMediaParams = {
-    discoveryType: 'genre' | 'year' | 'country';
-    id: string;
-    page: number;
 };
 
 export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverMediaParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
@@ -46,37 +41,65 @@ export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverM
     }
 }
 
+type FetchMediaByGenreParams = {
+    genreId: string;
+    page: number;
+}
 
-export async function fetchCombinedMedia({discoveryType, id, page}: FetchMediaParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const moviePage = Math.floor(page / 2) + 1;
-    const tvPage = Math.floor((page + 1) / 2);
-
+export async function fetchMediaByGenre({ genreId, page }: FetchMediaByGenreParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
     const [movieData, tvData] = await Promise.all([
-        (async () => {
-            switch (discoveryType) {
-                case 'genre': return discoverMoviesByGenre(id, moviePage);
-                case 'year': return discoverMoviesByYear(id, moviePage);
-                case 'country': return discoverMoviesByCountry(id, moviePage);
-                default: return { results: [], total_pages: 0, page: 1, total_results: 0 };
-            }
-        })(),
-        (async () => {
-            switch (discoveryType) {
-                case 'genre': return discoverTVByGenre(id, tvPage);
-                case 'year': return discoverTVByYear(id, tvPage);
-                case 'country': return discoverTVByCountry(id, tvPage);
-                default: return { results: [], total_pages: 0, page: 1, total_results: 0 };
-            }
-        })()
+        discoverMoviesByGenre(genreId, page),
+        discoverTVByGenre(genreId, page)
     ]);
-    
-    const combinedResults = [
-        ...movieData.results.map(item => ({ ...item, media_type: 'movie' as const })),
-        ...tvData.results.map(item => ({ ...item, media_type: 'tv' as const }))
-    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-    return { 
-        results: combinedResults,
-        total_pages: Math.max(movieData.total_pages, tvData.total_pages) * 2
-    };
+    const results = [
+        ...movieData.results,
+        ...tvData.results
+    ];
+    
+    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+    return { results, total_pages };
+}
+
+type FetchMediaByYearParams = {
+    year: string;
+    page: number;
+}
+
+export async function fetchMediaByYear({ year, page }: FetchMediaByYearParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+    const [movieData, tvData] = await Promise.all([
+        discoverMoviesByYear(year, page),
+        discoverTVByYear(year, page)
+    ]);
+
+    const results = [
+        ...movieData.results,
+        ...tvData.results
+    ];
+    
+    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+    return { results, total_pages };
+}
+
+type FetchMediaByCountryParams = {
+    countryCode: string;
+    page: number;
+}
+
+export async function fetchMediaByCountry({ countryCode, page }: FetchMediaByCountryParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+    const [movieData, tvData] = await Promise.all([
+        discoverMoviesByCountry(countryCode, page),
+        discoverTVByCountry(countryCode, page)
+    ]);
+
+    const results = [
+        ...movieData.results,
+        ...tvData.results
+    ];
+    
+    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+    return { results, total_pages };
 }

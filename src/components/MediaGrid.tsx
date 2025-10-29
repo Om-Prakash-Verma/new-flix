@@ -6,15 +6,15 @@ import type { Movie, TVShow } from "@/lib/tmdb-schemas";
 import { PosterCard, PosterCardSkeleton } from "./PosterCard";
 import { Loader2 } from "lucide-react";
 import { useInView } from 'react-intersection-observer';
+import { fetchDiscoverMedia } from '@/actions/discover';
 
 type MediaGridProps = {
     initialItems: (Movie | TVShow)[];
     type: 'movie' | 'tv';
     imageSize?: 'w185' | 'w342';
     initialLoading?: boolean;
-    fetcher?: (page: number) => Promise<{ results: (Movie | TVShow)[]; total_pages: number; }>;
     initialPage?: number;
-    initialTotalPages?: number;
+    totalPages?: number;
 };
 
 export function MediaGrid({ 
@@ -22,9 +22,8 @@ export function MediaGrid({
     type, 
     imageSize,
     initialLoading = false,
-    fetcher,
     initialPage = 1,
-    initialTotalPages = 1
+    totalPages: initialTotalPages = 1
 }: MediaGridProps) {
     
     const [items, setItems] = useState(initialItems);
@@ -39,11 +38,11 @@ export function MediaGrid({
     });
 
     const loadMore = useCallback(async () => {
-        if (isLoading || !hasMore || !fetcher) return;
+        if (isLoading || !hasMore) return;
         setIsLoading(true);
         const nextPage = page + 1;
         try {
-            const data = await fetcher(nextPage);
+            const data = await fetchDiscoverMedia({ type, page: nextPage, filters: { sort: 'popularity.desc' } });
             setItems(prev => [...prev, ...data.results]);
             setPage(nextPage);
             setTotalPages(data.total_pages);
@@ -52,7 +51,7 @@ export function MediaGrid({
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading, hasMore, page, fetcher]);
+    }, [isLoading, hasMore, page, type]);
 
     useEffect(() => {
         if (inView) {

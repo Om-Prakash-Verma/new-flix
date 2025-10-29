@@ -56,31 +56,29 @@ export function MediaHero({ item, type }: MediaHeroProps) {
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 mb-4 text-shadow">
                     <StarRating rating={item.vote_average} />
                     {year && (
-                        <Link href={`/discover/year/${year}`} prefetch={false}>
-                            <span className="text-sm">{year}</span>
-                        </Link>
+                        <Link href={`/year/${year}`} className="text-sm hover:underline" prefetch={false}>{year}</Link>
                     )}
                     {runtime && <span className="text-sm text-muted-foreground">•</span>}
                     {runtime && <span className="text-sm">{formatRuntime(runtime)}</span>}
                 </div>
                 <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
                 {item.genres.map(genre => (
-                    <Link key={genre.id} href={`/discover/genre/${slugify(genre.name)}-${genre.id}`} prefetch={false}>
-                    <Badge 
-                        variant="outline" 
-                        className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
-                        {genre.name}
-                    </Badge>
+                    <Link key={genre.id} href={`/genre/${slugify(genre.name)}-${genre.id}`} prefetch={false}>
+                        <Badge 
+                            variant="outline" 
+                            className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
+                            {genre.name}
+                        </Badge>
                     </Link>
                 ))}
                 </div>
                 {uniqueCountries.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
                         {uniqueCountries.map(countryCode => (
-                            <Link key={countryCode} href={`/discover/country/${countryCode}`} prefetch={false}>
+                            <Link key={countryCode} href={`/country/${countryCode}`} prefetch={false}>
                                 <Badge 
                                     variant="outline" 
-                                    className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                                    className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
                                     {countryCode}
                                 </Badge>
                             </Link>

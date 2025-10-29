@@ -1,19 +1,21 @@
 
-import { getGenres } from "@/lib/tmdb";
-import { MediaBrowser } from "@/components/MediaBrowser";
+import { fetchDiscoverMedia } from "@/actions/discover";
+import { MediaGrid } from "@/components/MediaGrid";
 
 export const runtime = 'edge';
 
 export default async function TvShowsPage() {
-  const tvGenres = await getGenres('tv');
+  const initialShows = await fetchDiscoverMedia({ type: 'tv', page: 1, filters: { sort: 'popularity.desc' }});
 
   return (
     <div className="py-12 px-4 sm:px-8">
-      <MediaBrowser
-        title="Browse TV Shows"
-        type="tv"
-        genres={tvGenres}
-      />
+        <h1 className="text-4xl font-bold mb-8">Browse TV Shows</h1>
+        <MediaGrid
+            initialItems={initialShows.results}
+            type="tv"
+            initialPage={1}
+            totalPages={initialShows.total_pages}
+        />
     </div>
   );
 }
