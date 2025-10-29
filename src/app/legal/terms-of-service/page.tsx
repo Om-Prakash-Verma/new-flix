@@ -13,7 +13,7 @@ export default function TermsOfServicePage() {
     <div className="container max-w-4xl py-12">
       <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
       <div className="space-y-6 text-foreground/80">
-        
+
         <h2 className="text-xl font-bold pt-4">About {siteConfig.name}</h2>
         <p>
           {siteConfig.name} is a free, open-source movie and TV show discovery platform. We help you discover content and find information about where to watch it online. We do not host, store, or stream any video content. All video content is provided by external, independent streaming services and video players.
@@ -74,7 +74,7 @@ export default function TermsOfServicePage() {
           All movie and TV show information displayed on {siteConfig.name} is sourced from The Movie Database (TMDb).
         </p>
         <p>
-          We respect copyright and intellectual property rights. If you believe any content infringes your rights, please see our <Link href="/legal/dmca" className="text-primary hover:underline"prefetch={false}>DMCA page</Link>.
+          We respect copyright and intellectual property rights. If you believe any content infringes your rights, please see our <Link href="/legal/dmca" className="text-primary hover:underline" prefetch={false}>DMCA page</Link>.
         </p>
 
         <h2 className="text-xl font-bold pt-4">User Responsibilities</h2>

@@ -5,8 +5,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { discoverMoviesByCompany, discoverTVByCompany } from '@/lib/tmdb';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
-import { MediaGrid, MediaGridSkeleton } from '@/components/MediaGrid';
+import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
 import { Loader2 } from 'lucide-react';
+import { MediaList, MediaListSkeleton } from './MediaList';
 
 type CompanyFilmographyProps = {
   companyId: number;
@@ -24,6 +25,29 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
 
   const { ref, inView } = useInView({ threshold: 0.5 });
   const isFetching = useRef(false);
+
+  const fetcher = useCallback(async (page: number) => {
+    // This fetcher is a bit different as it fetches from two sources (movies and tv)
+    // We'll use the page to alternate between fetching movies and tv shows
+    const moviePageToFetch = Math.floor(page / 2) + 1;
+    const tvPageToFetch = Math.floor((page + 1) / 2);
+
+    const [movieData, tvData] = await Promise.all([
+      discoverMoviesByCompany(companyId, moviePageToFetch),
+      discoverTVByCompany(companyId, tvPageToFetch),
+    ]);
+
+    const combinedResults = [
+      ...movieData.results.map(item => ({ ...item, media_type: 'movie' as const })),
+      ...tvData.results.map(item => ({ ...item, media_type: 'tv' as const }))
+    ];
+
+    return {
+      results: combinedResults,
+      total_pages: Math.max(movieData.total_pages, tvData.total_pages) * 2
+    };
+
+  }, [companyId]);
 
   const loadMore = useCallback(async () => {
     if (isFetching.current || (!hasMoreMovies && !hasMoreTv)) return;
@@ -97,13 +121,13 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
     }
   }, [inView, isLoading]);
 
-  const hasMore = hasMoreMovies || hasMoreTv;
-
   if (items.length === 0 && isLoading) {
     return (
       <section>
         <h2 className="text-2xl font-bold mb-4">Filmography</h2>
-        <MediaGridSkeleton />
+        <div className="max-w-4xl mx-auto">
+          <MediaListSkeleton />
+        </div>
       </section>
     );
   }
@@ -120,17 +144,10 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
   return (
     <section>
       <h2 className="text-2xl font-bold mb-4">Filmography</h2>
-      <MediaGrid
-        initialItems={items}
-        type="movie"
-        initialLoading={false}
-      />
-      <div ref={ref} className="h-10 flex justify-center items-center mt-8">
-        {isLoading ? (
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        ) : !hasMore && items.length > 0 ? (
-          <p className="text-muted-foreground">You've reached the end.</p>
-        ) : null}
+      <div className="max-w-4xl mx-auto">
+        <MediaList
+          initialItems={items}
+        />
       </div>
     </section>
   );

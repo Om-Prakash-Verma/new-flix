@@ -11,7 +11,7 @@ type WatchProvidersProps = {
 
 export function WatchProviders({ providers }: WatchProvidersProps) {
   const freeProviders = providers.free || [];
-  
+
   if (freeProviders.length === 0) {
     return null;
   }
