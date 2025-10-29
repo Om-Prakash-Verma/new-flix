@@ -112,7 +112,10 @@ export default async function MoviePage({ params }: MoviePageProps) {
     <div className="flex flex-col">
       <BackgroundImage posterUrl={getPosterImage(movie.poster_path)} backdropUrl={getBackdropImage(movie.backdrop_path)} />
       
-      <MediaHero item={movie} type="movie" />
+      <div className="relative z-10">
+        <MediaHero item={movie} type="movie" />
+        <ProductionCompanies companies={movie.production_companies} />
+      </div>
 
       <div className="py-12 space-y-12 px-4 sm:px-8">
         
@@ -121,13 +124,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
         <TrailersCarousel videos={movie.videos?.results || []} />
         
         <CreditsCarousel credits={movie.credits.cast} title="Cast" />
-
-        {movie.production_companies && movie.production_companies.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Production Companies</h2>
-            <ProductionCompanies companies={movie.production_companies} />
-          </section>
-        )}
 
         <Recommendations id={movie.id} type="movie" initialData={recommendations} />
 

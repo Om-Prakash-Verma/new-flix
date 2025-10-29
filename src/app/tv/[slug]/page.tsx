@@ -117,7 +117,10 @@ export default async function TVShowPage({ params }: TVShowPageProps) {
     <div className="flex flex-col">
       <BackgroundImage posterUrl={getPosterImage(show.poster_path)} backdropUrl={getBackdropImage(show.backdrop_path)} />
       
-      <MediaHero item={show} type="tv" />
+      <div className="relative z-10">
+        <MediaHero item={show} type="tv" />
+        <ProductionCompanies companies={show.production_companies} />
+      </div>
       
       <div className="py-12 space-y-12 px-4 sm:px-8">
 
@@ -133,13 +136,6 @@ export default async function TVShowPage({ params }: TVShowPageProps) {
         />
 
         <CreditsCarousel credits={show.credits.cast} title="Cast" />
-        
-        {show.production_companies && show.production_companies.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Production Companies</h2>
-            <ProductionCompanies companies={show.production_companies} />
-          </section>
-        )}
 
         <Recommendations id={show.id} type="tv" initialData={recommendations} />
 

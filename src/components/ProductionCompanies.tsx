@@ -1,7 +1,10 @@
 
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
 import { slugify } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { getPosterImage } from '@/lib/tmdb-images';
 import type { ProductionCompany } from '@/lib/tmdb-schemas';
 
 type ProductionCompaniesProps = {
@@ -9,21 +12,39 @@ type ProductionCompaniesProps = {
 };
 
 export function ProductionCompanies({ companies }: ProductionCompaniesProps) {
-  if (!companies || companies.length === 0) {
+  const companiesWithLogos = companies.filter(c => c.logo_path);
+
+  if (companiesWithLogos.length === 0) {
     return null;
   }
 
   return (
-    <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-      {companies.map(company => (
-        <Link key={company.id} href={`/company/${slugify(company.name)}-${company.id}`} prefetch={false}>
-          <Badge 
-            variant="outline" 
-            className="bg-black/20 backdrop-blur-sm border-white/20 text-white rounded-md hover:bg-white/30 transition-colors">
-            {company.name}
-          </Badge>
-        </Link>
-      ))}
+    <div className="md:absolute md:top-8 md:right-8 md:z-20 flex flex-col items-start md:items-end gap-4 px-4 sm:px-8 md:px-0">
+        <h2 className="text-sm font-bold text-white text-shadow uppercase tracking-wider">Production</h2>
+        <div className="flex flex-row flex-wrap md:flex-col items-center md:items-end gap-4">
+          {companiesWithLogos.slice(0, 3).map(company => ( // Limit to max 3 companies
+            <Link 
+              key={company.id} 
+              href={`/company/${slugify(company.name)}-${company.id}`}
+              className="group"
+              prefetch={false}
+            >
+              <div className="bg-black/30 backdrop-blur-md border border-white/10 p-2 h-14 w-28 flex items-center justify-center transition-colors group-hover:bg-black/50 rounded-lg overflow-hidden">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={getPosterImage(company.logo_path, 'w185')}
+                    alt={`Logo for ${company.name}`}
+                    title={`Logo for ${company.name}`}
+                    fill
+                    className="object-contain"
+                    sizes="112px"
+                    data-ai-hint="company logo"
+                  />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
     </div>
   );
 }
