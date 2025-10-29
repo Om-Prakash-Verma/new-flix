@@ -21,13 +21,13 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
   const [hasMoreMovies, setHasMoreMovies] = useState(true);
   const [hasMoreTv, setHasMoreTv] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { ref, inView } = useInView({ threshold: 0.5 });
   const isFetching = useRef(false);
 
   const loadMore = useCallback(async () => {
     if (isFetching.current || (!hasMoreMovies && !hasMoreTv)) return;
-    
+
     isFetching.current = true;
     setIsLoading(true);
 
@@ -58,11 +58,11 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
       } else {
         newHasMoreTv = false;
       }
-      
+
       if (newItems.length > 0) {
         setItems(prev => {
           const all = [...prev, ...newItems];
-          const unique = all.filter((item, index, self) => 
+          const unique = all.filter((item, index, self) =>
             index === self.findIndex(t => t.id === item.id && t.media_type === item.media_type)
           );
           return unique.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
@@ -88,7 +88,7 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
 
   useEffect(() => {
     loadMoreRef.current();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Initial load
 
   useEffect(() => {
@@ -110,28 +110,27 @@ export function CompanyFilmography({ companyId }: CompanyFilmographyProps) {
 
   if (items.length === 0 && !isLoading) {
     return (
-        <section>
-             <h2 className="text-2xl font-bold mb-4">Filmography</h2>
-             <p className="text-muted-foreground text-center">No movies or TV shows found for this company.</p>
-        </section>
+      <section>
+        <h2 className="text-2xl font-bold mb-4">Filmography</h2>
+        <p className="text-muted-foreground text-center">No movies or TV shows found for this company.</p>
+      </section>
     );
   }
 
   return (
     <section>
-        <h2 className="text-2xl font-bold mb-4">Filmography</h2>
-        <MediaGrid 
-          initialItems={items}
-          type="movie"
-          initialLoading={false}
-        />
-        <div ref={ref} className="h-10 flex justify-center items-center mt-8">
-            {isLoading ? (
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            ) : !hasMore && items.length > 0 ? (
-                <p className="text-muted-foreground">You've reached the end.</p>
-            ) : null}
-        </div>
+      <h2 className="text-2xl font-bold mb-4">Filmography</h2>
+      <MediaGrid
+        initialItems={items}
+        type="movie"
+      />
+      <div ref={ref} className="h-10 flex justify-center items-center mt-8">
+        {isLoading ? (
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        ) : !hasMore && items.length > 0 ? (
+          <p className="text-muted-foreground">You've reached the end.</p>
+        ) : null}
+      </div>
     </section>
   );
 }

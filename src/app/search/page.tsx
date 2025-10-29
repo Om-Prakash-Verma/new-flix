@@ -30,8 +30,8 @@ function SearchPageContent() {
         </>
       ) : (
         <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-            <h1 className="text-3xl font-bold">Search {siteConfig.name}</h1>
-            <p className="text-muted-foreground mt-2">Find your next favorite movie or TV show.</p>
+          <h1 className="text-3xl font-bold">Search {siteConfig.name}</h1>
+          <p className="text-muted-foreground mt-2">Find your next favorite movie or TV show.</p>
         </div>
       )}
     </div>
@@ -39,20 +39,20 @@ function SearchPageContent() {
 }
 
 export default function SearchPage() {
-    return (
-        <Suspense fallback={<SearchPageSkeleton />}>
-            <SearchPageContent />
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={<SearchPageSkeleton />}>
+      <SearchPageContent />
+    </Suspense>
+  )
 }
 
 function SearchPageSkeleton() {
-    return (
-        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-             <Skeleton className="h-10 w-1/2 mb-8" />
-             <SearchResultsSkeleton />
-        </div>
-    )
+  return (
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+      <Skeleton className="h-10 w-1/2 mb-8" />
+      <SearchResultsSkeleton />
+    </div>
+  )
 }
 
 function SearchResults({ query }: { query: string }) {
@@ -74,26 +74,26 @@ function SearchResults({ query }: { query: string }) {
 
     setIsLoading(true);
     if (isNewQuery) {
-        setItems([]);
-        setPage(0); // This will be incremented to 1 for the first fetch
+      setItems([]);
+      setPage(0); // This will be incremented to 1 for the first fetch
     }
     const nextPage = isNewQuery ? 1 : page + 1;
-    
+
     try {
-        const data = await searchMulti(query, nextPage);
-        setItems(prev => {
-            const newItems = data.results.filter(
-                (newItem) => !prev.some(existingItem => existingItem.id === newItem.id && existingItem.media_type === newItem.media_type)
-            );
-            return isNewQuery ? data.results : [...prev, ...newItems];
-        });
-        setPage(nextPage);
-        setTotalPages(data.total_pages);
+      const data = await searchMulti(query, nextPage);
+      setItems(prev => {
+        const newItems = data.results.filter(
+          (newItem) => !prev.some(existingItem => existingItem.id === newItem.id && existingItem.media_type === newItem.media_type)
+        );
+        return isNewQuery ? data.results : [...prev, ...newItems];
+      });
+      setPage(nextPage);
+      setTotalPages(data.total_pages);
     } catch (error) {
-        console.error("Failed to fetch search results", error);
+      console.error("Failed to fetch search results", error);
     } finally {
-        setIsLoading(false);
-        if (isNewQuery) setIsInitialLoading(false);
+      setIsLoading(false);
+      if (isNewQuery) setIsInitialLoading(false);
     }
   }, [query, isLoading, hasMore, page]);
 
@@ -104,19 +104,19 @@ function SearchResults({ query }: { query: string }) {
     // Reset and fetch for new query
     setIsInitialLoading(true);
     loadItemsRef.current(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   useEffect(() => {
     if (inView && !isLoading) {
-        loadItemsRef.current();
+      loadItemsRef.current();
     }
   }, [inView, isLoading]);
-  
+
   if (isInitialLoading) {
     return <SearchResultsSkeleton />;
   }
-  
+
   const noResults = items.length === 0 && !isLoading;
 
   if (noResults) {
@@ -125,18 +125,18 @@ function SearchResults({ query }: { query: string }) {
 
   return (
     <>
-        <div className="flex flex-col gap-4">
-            {items.map((item) => (
-                <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type={item.media_type as 'movie' | 'tv'} />
-            ))}
-            {(isLoading && hasMore) && (
-                <>
-                    <MediaListItemSkeleton />
-                    <MediaListItemSkeleton />
-                </>
-            )}
-        </div>
-         <div ref={loadMoreRef} className="h-10" />
+      <div className="flex flex-col gap-4">
+        {items.map((item) => (
+          <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type={item.media_type as 'movie' | 'tv'} prefetch={false} />
+        ))}
+        {(isLoading && hasMore) && (
+          <>
+            <MediaListItemSkeleton />
+            <MediaListItemSkeleton />
+          </>
+        )}
+      </div>
+      <div ref={loadMoreRef} className="h-10" />
     </>
   );
 }
@@ -144,7 +144,7 @@ function SearchResults({ query }: { query: string }) {
 function SearchResultsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
-        {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
+      {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
     </div>
   );
 }
