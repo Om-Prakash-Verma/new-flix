@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -42,12 +43,12 @@ export function RecentlyReleased() {
 
     return (
         <section>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 px-4 sm:px-8 gap-4">
-                <h2 className="text-2xl font-bold uppercase tracking-wider">Recently Released</h2>
-                <div className="grid w-full sm:w-auto gap-1.5">
-                    <Label htmlFor="country-filter" className="text-muted-foreground">Filter by Country</Label>
+            <div className="flex flex-row justify-between items-center mb-4 px-4 sm:px-8 gap-4">
+                <h2 className="text-2xl font-bold uppercase tracking-wider flex-shrink-0">Recently Released</h2>
+                <div className="grid w-auto max-w-[200px] sm:max-w-xs flex-grow gap-1.5">
+                    <Label htmlFor="country-filter" className="text-muted-foreground sr-only">Filter by Country</Label>
                     <Select value={selectedCountry} onValueChange={setSelectedCountry} disabled={isLoading}>
-                        <SelectTrigger className="w-full sm:w-[200px] bg-secondary border-border" id="country-filter">
+                        <SelectTrigger className="w-full bg-secondary border-border" id="country-filter">
                             <SelectValue placeholder="All Countries" />
                         </SelectTrigger>
                         <SelectContent>
@@ -59,7 +60,7 @@ export function RecentlyReleased() {
                     </Select>
                 </div>
             </div>
-            
+
             <Carousel>
                 {isLoading ? (
                     [...Array(10)].map((_, i) => <PosterCardSkeleton key={i} />)
