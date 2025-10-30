@@ -2,7 +2,7 @@
 
 Flix is a feature-rich, open-source movie and TV show discovery platform built with a modern tech stack. It's designed to help you find your next favorite thing to watch, providing detailed information, trailers, recommendations, and direct links to watch content online for free.
 
-![Flix Screenshot](https://storage.googleapis.com/static.cinestream.org/cinestream-screenshot.png)
+![Flix Screenshot](./preview.png)
 
 ## ✨ Features
 
