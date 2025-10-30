@@ -231,28 +231,38 @@ export async function getRandomMedia(type: 'movie' | 'tv'): Promise<Movie | TVSh
 }
 
 export async function getRecentlyReleased(country?: string) {
-  const today = new Date();
-  const threeMonthsAgo = subMonths(today, 3);
+    const today = new Date();
+    const threeMonthsAgo = subMonths(today, 3);
+    
+    const baseParams: Record<string, string | number> = {
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 50,
+    };
 
-  const params: Record<string, string | number> = {
-    'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
-    'primary_release_date.lte': today.toISOString().split('T')[0],
-    sort_by: 'popularity.desc',
-    'vote_count.gte': 50,
-  };
+    if (country && country !== 'all') {
+        baseParams.with_origin_country = country;
+    }
 
-  if (country && country !== 'all') {
-    params.region = country;
-  }
+    const movieParams = {
+        ...baseParams,
+        'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+        'primary_release_date.lte': today.toISOString().split('T')[0],
+    }
 
-  const [movies, tvShows] = await Promise.all([
-    fetchPagedData('discover/movie', params, movieSchema),
-    fetchPagedData('discover/tv', { ...params, 'first_air_date.gte': params['primary_release_date.gte'], 'first_air_date.lte': params['primary_release_date.lte'] }, tvSchema),
-  ]);
+    const tvParams = {
+        ...baseParams,
+        'first_air_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+        'first_air_date.lte': today.toISOString().split('T')[0],
+    }
 
-  const combined = [...movies.results, ...tvShows.results];
+    const [movies, tvShows] = await Promise.all([
+        fetchPagedData('discover/movie', movieParams, movieSchema),
+        fetchPagedData('discover/tv', tvParams, tvSchema),
+    ]);
+    
+    const combined = [...movies.results, ...tvShows.results];
 
-  return combined.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+    return combined.sort((a,b) => (b.popularity || 0) - (a.popularity || 0));
 }
 
 
@@ -284,3 +294,4 @@ export const fetchAllHomepageData = async () => {
     trendingTVShows: trendingTVShows.results,
   };
 };
+

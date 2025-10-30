@@ -29,25 +29,13 @@ export function RecentlyReleased() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchInitialData() {
-            const initialItems = await getRecentlyReleased();
-            setItems(initialItems);
-            setIsLoading(false);
-        }
-        fetchInitialData();
-    }, []);
-
-    useEffect(() => {
-        async function fetchFilteredData() {
+        async function fetchData() {
             setIsLoading(true);
-            const filteredItems = await getRecentlyReleased(selectedCountry);
-            setItems(filteredItems);
+            const newItems = await getRecentlyReleased(selectedCountry);
+            setItems(newItems);
             setIsLoading(false);
         }
-        // Don't fetch on initial render, let the first useEffect handle that
-        if (!isLoading) {
-            fetchFilteredData();
-        }
+        fetchData();
     }, [selectedCountry]);
 
     return (
@@ -69,7 +57,7 @@ export function RecentlyReleased() {
                     </Select>
                 </div>
             </div>
-
+            
             <Carousel>
                 {isLoading ? (
                     [...Array(10)].map((_, i) => <PosterCardSkeleton key={i} />)
