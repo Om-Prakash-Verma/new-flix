@@ -5,7 +5,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
-import { fetchMediaByYear } from '@/actions/discover';
+import { fetchMediaByYear } from '@/lib/tmdb';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MediaListSkeleton } from '@/components/MediaList';

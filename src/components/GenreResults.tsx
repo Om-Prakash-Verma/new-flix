@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { fetchMediaByGenre } from '@/actions/discover';
+import { fetchMediaByGenre } from '@/lib/tmdb';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
 import { MediaListSkeleton } from './MediaList';

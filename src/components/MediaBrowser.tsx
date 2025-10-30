@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
-import { fetchDiscoverMedia } from "@/actions/discover";
+import { fetchDiscoverMedia } from "@/lib/tmdb";
 import { MediaGrid } from "@/components/MediaGrid";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";

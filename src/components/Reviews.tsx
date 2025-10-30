@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useTransition } from 'react';
-import { fetchReviews } from '@/actions/tmdb';
+import { fetchReviews } from '@/lib/tmdb';
 import type { Review } from '@/lib/tmdb-schemas';
 import { ReviewCard } from './ReviewCard';
 import { Button } from './ui/button';

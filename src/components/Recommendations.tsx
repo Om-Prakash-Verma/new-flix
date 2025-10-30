@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchRecommendations } from '@/actions/tmdb';
+import { fetchRecommendations } from '@/lib/tmdb';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { Carousel } from './Carousel';
 import { PosterCard, PosterCardSkeleton } from './PosterCard';

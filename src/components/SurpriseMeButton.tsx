@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Dices, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { surpriseMeAction } from '@/actions/surprise-me';
+import { surpriseMeAction } from '@/lib/tmdb';
 
 export function SurpriseMeButton() {
   const [isLoading, setIsLoading] = useState(false);

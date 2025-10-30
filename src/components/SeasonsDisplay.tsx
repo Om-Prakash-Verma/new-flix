@@ -15,7 +15,7 @@ import { Card } from '@/components/ui/card';
 import { PlayButton } from './PlayButton';
 import { ScrollArea } from './ui/scroll-area';
 import { Skeleton } from './ui/skeleton';
-import { getSeasonDetails } from '@/actions/tmdb';
+import { getSeasonDetails } from '@/lib/tmdb';
 import { StarRating } from './StarRating';
 import { getBackdropImage } from '@/lib/tmdb-images';
 import { Button } from './ui/button';
