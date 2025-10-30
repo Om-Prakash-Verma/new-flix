@@ -3,26 +3,35 @@
 
 import { useState, useEffect } from 'react';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
-import { getCountries, getRecentlyReleased } from '@/lib/tmdb';
+import { getRecentlyReleased } from '@/lib/tmdb';
 import { Carousel } from '@/components/Carousel';
 import { PosterCard, PosterCardSkeleton } from '@/components/PosterCard';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
+const topCountries: Record<string, string> = {
+    'US': 'United States',
+    'GB': 'United Kingdom',
+    'IN': 'India',
+    'CA': 'Canada',
+    'JP': 'Japan',
+    'FR': 'France',
+    'DE': 'Germany',
+    'KR': 'South Korea',
+    'ES': 'Spain',
+    'AU': 'Australia',
+};
+
+
 export function RecentlyReleased() {
     const [items, setItems] = useState<(Movie | TVShow)[]>([]);
-    const [countries, setCountries] = useState<Record<string, string>>({});
     const [selectedCountry, setSelectedCountry] = useState('all');
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchInitialData() {
-            const [initialItems, countryList] = await Promise.all([
-                getRecentlyReleased(),
-                getCountries(),
-            ]);
+            const initialItems = await getRecentlyReleased();
             setItems(initialItems);
-            setCountries(countryList);
             setIsLoading(false);
         }
         fetchInitialData();
@@ -53,7 +62,7 @@ export function RecentlyReleased() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Countries</SelectItem>
-                            {Object.entries(countries).map(([code, name]) => (
+                            {Object.entries(topCountries).map(([code, name]) => (
                                 <SelectItem key={code} value={code}>{name}</SelectItem>
                             ))}
                         </SelectContent>

@@ -231,45 +231,28 @@ export async function getRandomMedia(type: 'movie' | 'tv'): Promise<Movie | TVSh
 }
 
 export async function getRecentlyReleased(country?: string) {
-    const today = new Date();
-    const threeMonthsAgo = subMonths(today, 3);
-    
-    const params: Record<string, string | number> = {
-        'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
-        'primary_release_date.lte': today.toISOString().split('T')[0],
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 50,
-    };
+  const today = new Date();
+  const threeMonthsAgo = subMonths(today, 3);
 
-    if (country && country !== 'all') {
-        params.region = country;
-        params.with_origin_country = country;
-    }
+  const params: Record<string, string | number> = {
+    'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+    'primary_release_date.lte': today.toISOString().split('T')[0],
+    sort_by: 'popularity.desc',
+    'vote_count.gte': 50,
+  };
 
-    const [movies, tvShows] = await Promise.all([
-        fetchPagedData('discover/movie', params, movieSchema),
-        fetchPagedData('discover/tv', { ...params, 'first_air_date.gte': params['primary_release_date.gte'], 'first_air_date.lte': params['primary_release_date.lte'] }, tvSchema),
-    ]);
-    
-    const combined = [...movies.results, ...tvShows.results];
+  if (country && country !== 'all') {
+    params.region = country;
+  }
 
-    // Sort by popularity, but give a boost to items with a recent release date
-    return combined.sort((a,b) => {
-        const popularityA = a.popularity || 0;
-        const popularityB = b.popularity || 0;
-        
-        const dateA = new Date('release_date' in a ? a.release_date : a.first_air_date);
-        const dateB = new Date('release_date' in b ? b.release_date : b.first_air_date);
-        
-        const timeDiffA = Math.abs(today.getTime() - dateA.getTime());
-        const timeDiffB = Math.abs(today.getTime() - dateB.getTime());
+  const [movies, tvShows] = await Promise.all([
+    fetchPagedData('discover/movie', params, movieSchema),
+    fetchPagedData('discover/tv', { ...params, 'first_air_date.gte': params['primary_release_date.gte'], 'first_air_date.lte': params['primary_release_date.lte'] }, tvSchema),
+  ]);
 
-        // Boost items that are newer. The smaller the time difference, the higher the boost.
-        const boostA = (1 / (timeDiffA + 1)) * 1000;
-        const boostB = (1 / (timeDiffB + 1)) * 1000;
+  const combined = [...movies.results, ...tvShows.results];
 
-        return (popularityB + boostB) - (popularityA + boostA);
-    });
+  return combined.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 }
 
 
