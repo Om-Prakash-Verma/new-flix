@@ -14,12 +14,14 @@ type MediaBrowserProps = {
   title: string;
   type: 'movie' | 'tv';
   genres: Record<number, string>;
+  countries: Record<string, string>;
 };
 
-export function MediaBrowser({ title, type, genres }: MediaBrowserProps) {
+export function MediaBrowser({ title, type, genres, countries }: MediaBrowserProps) {
   const [filters, setFilters] = useState({
     genre: 'all',
     year: 'all',
+    country: 'all',
     sort: 'popularity.desc' as SortOption
   });
 
@@ -128,6 +130,20 @@ export function MediaBrowser({ title, type, genres }: MediaBrowserProps) {
                         ))}
                     </SelectContent>
                 </Select>
+            </div>
+            <div className="grid w-full gap-1.5">
+              <Label htmlFor="country" className="text-muted-foreground">Country</Label>
+              <Select value={filters.country} onValueChange={(value) => handleFilterChange('country', value)}>
+                  <SelectTrigger className="w-full md:w-[180px] bg-secondary border-border" id="country">
+                      <SelectValue placeholder="All Countries" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">All Countries</SelectItem>
+                      {Object.entries(countries).map(([code, name]) => (
+                          <SelectItem key={code} value={code}>{name}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
             </div>
         </div>
       </div>

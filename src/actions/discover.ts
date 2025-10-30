@@ -12,6 +12,7 @@ type FetchDiscoverMediaParams = {
     filters: {
         genre?: string;
         year?: string;
+        country?: string;
         sort: SortOption;
     }
 };
@@ -30,6 +31,9 @@ export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverM
         } else {
             params.first_air_date_year = filters.year;
         }
+    }
+    if (filters.country && filters.country !== 'all') {
+        params.with_origin_country = filters.country;
     }
 
     if (type === 'movie') {

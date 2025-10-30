@@ -28,6 +28,7 @@ import {
   type CompanyDetails,
 } from './tmdb-schemas';
 import { z } from 'zod';
+import { subMonths } from 'date-fns';
 
 const API_KEY = process.env.TMDB_API_KEY || '67f72af3decc8346e0493120f89e5988';
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -229,6 +230,49 @@ export async function getRandomMedia(type: 'movie' | 'tv'): Promise<Movie | TVSh
   return popularItems.results[randomIndex];
 }
 
+export async function getRecentlyReleased(country?: string) {
+    const today = new Date();
+    const threeMonthsAgo = subMonths(today, 3);
+    
+    const params: Record<string, string | number> = {
+        'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+        'primary_release_date.lte': today.toISOString().split('T')[0],
+        sort_by: 'popularity.desc',
+        'vote_count.gte': 50,
+    };
+
+    if (country && country !== 'all') {
+        params.region = country;
+        params.with_origin_country = country;
+    }
+
+    const [movies, tvShows] = await Promise.all([
+        fetchPagedData('discover/movie', params, movieSchema),
+        fetchPagedData('discover/tv', { ...params, 'first_air_date.gte': params['primary_release_date.gte'], 'first_air_date.lte': params['primary_release_date.lte'] }, tvSchema),
+    ]);
+    
+    const combined = [...movies.results, ...tvShows.results];
+
+    // Sort by popularity, but give a boost to items with a recent release date
+    return combined.sort((a,b) => {
+        const popularityA = a.popularity || 0;
+        const popularityB = b.popularity || 0;
+        
+        const dateA = new Date('release_date' in a ? a.release_date : a.first_air_date);
+        const dateB = new Date('release_date' in b ? b.release_date : b.first_air_date);
+        
+        const timeDiffA = Math.abs(today.getTime() - dateA.getTime());
+        const timeDiffB = Math.abs(today.getTime() - dateB.getTime());
+
+        // Boost items that are newer. The smaller the time difference, the higher the boost.
+        const boostA = (1 / (timeDiffA + 1)) * 1000;
+        const boostB = (1 / (timeDiffB + 1)) * 1000;
+
+        return (popularityB + boostB) - (popularityA + boostA);
+    });
+}
+
+
 // --- Homepage All Data ---
 
 export const fetchAllHomepageData = async () => {
@@ -257,4 +301,3 @@ export const fetchAllHomepageData = async () => {
     trendingTVShows: trendingTVShows.results,
   };
 };
-

@@ -1,20 +1,22 @@
 
-import { fetchDiscoverMedia } from "@/actions/discover";
-import { MediaGrid } from "@/components/MediaGrid";
+import { MediaBrowser } from "@/components/MediaBrowser";
+import { getGenres, getCountries } from "@/lib/tmdb";
 
 export const runtime = 'edge';
 
 export default async function MoviesPage() {
-  const initialMovies = await fetchDiscoverMedia({ type: 'movie', page: 1, filters: { sort: 'popularity.desc' }});
+  const [genres, countries] = await Promise.all([
+    getGenres('movie'),
+    getCountries()
+  ]);
 
   return (
     <div className="py-12 px-4 sm:px-8">
-        <h1 className="text-4xl font-bold mb-8">Browse Movies</h1>
-        <MediaGrid
-            initialItems={initialMovies.results}
+        <MediaBrowser 
+            title="Browse Movies"
             type="movie"
-            initialPage={1}
-            totalPages={initialMovies.total_pages}
+            genres={genres}
+            countries={countries}
         />
     </div>
   );

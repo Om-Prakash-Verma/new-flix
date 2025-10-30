@@ -11,6 +11,7 @@ import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { BackgroundImage } from '@/components/BackgroundImage';
 import { getPosterImage, getBackdropImage } from '@/lib/tmdb-images';
 import { FeaturedCollections } from '@/components/FeaturedCollections';
+import { RecentlyReleased } from '@/components/RecentlyReleased';
 
 export const runtime = 'edge';
 
@@ -40,7 +41,7 @@ async function HomePage() {
     trendingMovies,
     popularTVShows,
     topRatedTVShows,
-    trendingTVShows
+    trendingTVShows,
   } = homepageData;
 
   const allGenresMap = { ...movieGenresMap, ...tvGenresMap };
@@ -78,12 +79,14 @@ async function HomePage() {
 
         <FeaturedCollections />
 
+        <RecentlyReleased />
+
         {carousels.map(carousel => (
           <section key={carousel.title}>
             <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">{carousel.title}</h2>
             <Carousel>
               {carousel.items.map((item) => {
-                const itemType = carousel.type || ('title' in item ? 'movie' : 'tv');
+                const itemType = 'title' in item ? 'movie' : 'tv';
                 return <PosterCard key={item.id} item={item} type={itemType as 'movie' | 'tv'} />;
               })}
             </Carousel>

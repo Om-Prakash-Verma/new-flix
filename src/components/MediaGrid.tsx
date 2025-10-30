@@ -13,6 +13,7 @@ type MediaGridProps = {
     type: 'movie' | 'tv';
     imageSize?: 'w185' | 'w342';
     initialLoading?: boolean;
+    fetcher: (page: number) => Promise<(Movie | TVShow)[]>;
     initialPage?: number;
     totalPages?: number;
 };
@@ -22,6 +23,7 @@ export function MediaGrid({
     type, 
     imageSize,
     initialLoading = false,
+    fetcher,
     initialPage = 1,
     totalPages: initialTotalPages = 1
 }: MediaGridProps) {
@@ -38,20 +40,19 @@ export function MediaGrid({
     });
 
     const loadMore = useCallback(async () => {
-        if (isLoading || !hasMore) return;
+        if (isLoading || !hasMore || !fetcher) return;
         setIsLoading(true);
         const nextPage = page + 1;
         try {
-            const data = await fetchDiscoverMedia({ type, page: nextPage, filters: { sort: 'popularity.desc' } });
-            setItems(prev => [...prev, ...data.results]);
+            const newItems = await fetcher(nextPage);
+            setItems(prev => [...prev, ...newItems]);
             setPage(nextPage);
-            setTotalPages(data.total_pages);
         } catch (error) {
             console.error("Failed to fetch more items", error);
         } finally {
             setIsLoading(false);
         }
-    }, [isLoading, hasMore, page, type]);
+    }, [isLoading, hasMore, page, fetcher]);
 
     useEffect(() => {
         if (inView) {
