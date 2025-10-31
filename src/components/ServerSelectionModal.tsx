@@ -14,6 +14,7 @@ import { Server, serverList } from '@/lib/serverList';
 import type { PlayerModalInfo } from './PlayerModal';
 import { PlayerModal } from './PlayerModal';
 import { Button } from './ui/button';
+import { ShieldCheck } from 'lucide-react';
 
 type ServerSelectionModalProps = {
   playerInfo: PlayerModalInfo;
@@ -42,6 +43,17 @@ export function ServerSelectionModal({ playerInfo, children }: ServerSelectionMo
               Choose a server from the list below to start playing.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="mt-2 bg-green-950/50 text-green-300 border border-green-700/30 p-3 rounded-lg">
+                <div className="flex items-center gap-3 text-xs">
+                    <ShieldCheck className="h-8 w-8 flex-shrink-0" />
+                    <div>
+                        <p className="font-bold">PRO TIP: Use the 'Sandbox ON' switch in the player to block most ads.</p>
+                        <p className="text-green-400/80">Only turn it OFF if the video doesn't load.</p>
+                    </div>
+                </div>
+          </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-4">
             {serverList.map(server => (
               <Button
