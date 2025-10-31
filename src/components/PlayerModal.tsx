@@ -256,11 +256,11 @@ function PlayerUI({
 }: PlayerUIProps) {
   const nodeRef = useRef(null);
   return (
-    // Make the main overlay container ignore pointer events
-    <div className="absolute inset-0 pointer-events-none">
+    // Make the main overlay container ignore pointer events on desktop, but not on mobile
+    <div className="absolute inset-0 md:pointer-events-none">
       
       {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 flex justify-between items-center pointer-events-auto">
+      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 flex justify-between items-center pointer-events-auto">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -280,7 +280,7 @@ function PlayerUI({
       <Draggable nodeRef={nodeRef} handle=".handle">
         <div
           ref={nodeRef}
-          className="absolute top-4 right-4 z-10 opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 handle cursor-move pointer-events-auto"
+          className="absolute top-4 right-4 z-10 md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 handle cursor-move pointer-events-auto"
         >
           <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md p-2 rounded-lg border border-white/10">
             <div className="flex items-center gap-2 px-2">
