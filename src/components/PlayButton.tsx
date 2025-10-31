@@ -5,6 +5,7 @@ import { PlayerModal } from './PlayerModal';
 import { Button } from './ui/button';
 import { PlayCircle } from 'lucide-react';
 import type { PlayerModalInfo } from './PlayerModal';
+import { ServerSelectionModal } from './ServerSelectionModal';
 
 type PlayButtonProps = {
   title: string;
@@ -33,8 +34,8 @@ export function PlayButton({ title, mediaType, tmdbId, season, episode, children
   );
 
   return (
-    <PlayerModal title={title} playerInfo={playerInfo}>
+    <ServerSelectionModal playerInfo={playerInfo}>
       {triggerContent}
-    </PlayerModal>
+    </ServerSelectionModal>
   );
 }

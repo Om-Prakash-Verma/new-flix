@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Skeleton } from './ui/skeleton';
 import { serverList, type Server } from '@/lib/serverList';
@@ -40,44 +39,42 @@ export type PlayerModalInfo = {
 };
 
 type PlayerModalProps = {
-  title: string;
   playerInfo: PlayerModalInfo;
-  children: React.ReactNode;
+  initialServer: Server;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
 };
+
 
 //================================================================//
 // 2. MAIN PLAYER MODAL COMPONENT (Entry Point)
 //================================================================//
-
-export function PlayerModal({ title, playerInfo, children }: PlayerModalProps) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      {open && (
+export function PlayerModal({ playerInfo, initialServer, isOpen, onOpenChange }: PlayerModalProps) {
+    if (!isOpen) return null;
+  
+    return (
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <PlayerModalContent
-          title={title}
           playerInfo={playerInfo}
-          onClose={() => setOpen(false)}
+          initialServer={initialServer}
+          onClose={() => onOpenChange(false)}
         />
-      )}
-    </Dialog>
-  );
-}
+      </Dialog>
+    );
+  }
 
 //================================================================//
 // 3. PLAYER MODAL CONTENT (Main Logic)
 //================================================================//
 
 type PlayerModalContentProps = {
-  title: string;
   playerInfo: PlayerModalInfo;
+  initialServer: Server;
   onClose: () => void;
 };
 
-function PlayerModalContent({ title, playerInfo, onClose }: PlayerModalContentProps) {
-  const [currentServer, setCurrentServer] = useState<Server>(serverList[0]);
+function PlayerModalContent({ playerInfo, initialServer, onClose }: PlayerModalContentProps) {
+  const [currentServer, setCurrentServer] = useState<Server>(initialServer);
   const [currentUrl, setCurrentUrl] = useState('');
   const [imdbId, setImdbId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,49 +87,7 @@ function PlayerModalContent({ title, playerInfo, onClose }: PlayerModalContentPr
     setIsSandboxed(prev => !prev);
     setIframeKey(prev => prev + 1); // This forces the iframe to re-render
   };
-
-  useEffect(() => {
-    const updateUrl = async () => {
-      setIsLoading(true);
-      try {
-        let url = '';
-        if (currentServer.useImdb) {
-          let currentImdbId = imdbId;
-          if (!currentImdbId) {
-            const ids = await getExternalIds(playerInfo.type, playerInfo.tmdbId);
-            currentImdbId = ids?.imdb_id || null;
-            if (ids?.imdb_id) {
-              setImdbId(ids.imdb_id);
-            }
-          }
-
-          if (currentImdbId) {
-            url = playerInfo.type === 'movie'
-              ? currentServer.movieLink(currentImdbId)
-              : currentServer.episodeLink(currentImdbId, playerInfo.season!, playerInfo.episode!);
-          } else {
-            console.error('IMDB ID required but not found for server:', currentServer.name);
-            handleFallback(); // Use a local variable to call the latest version
-            return;
-          }
-        } else {
-          url = playerInfo.type === 'movie'
-            ? currentServer.movieLink(playerInfo.tmdbId)
-            : currentServer.episodeLink(playerInfo.tmdbId, playerInfo.season!, playerInfo.episode!);
-        }
-        setCurrentUrl(url);
-      } catch (error) {
-        console.error('Error setting server URL:', error);
-        handleFallback(); // Use a local variable to call the latest version
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    updateUrl();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentServer, playerInfo]);
-
-
+  
   const handleServerChange = (serverName: string) => {
     const newServer = serverList.find(s => s.name === serverName);
     if (newServer) {
@@ -165,24 +120,66 @@ function PlayerModalContent({ title, playerInfo, onClose }: PlayerModalContentPr
           'All servers were tried and failed to load. Please try again later.',
       });
     }
-  }, [currentServer, playerInfo, toast]);
+  }, [currentServer.name, playerInfo, toast]);
+
+
+  useEffect(() => {
+    const updateUrl = async () => {
+      setIsLoading(true);
+      try {
+        let url = '';
+        if (currentServer.useImdb) {
+          let currentImdbId = imdbId;
+          if (!currentImdbId) {
+            const ids = await getExternalIds(playerInfo.type, playerInfo.tmdbId);
+            currentImdbId = ids?.imdb_id || null;
+            if (ids?.imdb_id) {
+              setImdbId(ids.imdb_id);
+            }
+          }
+
+          if (currentImdbId) {
+            url = playerInfo.type === 'movie'
+              ? currentServer.movieLink(currentImdbId)
+              : currentServer.episodeLink(currentImdbId, playerInfo.season!, playerInfo.episode!);
+          } else {
+            console.error('IMDB ID required but not found for server:', currentServer.name);
+            handleFallback();
+            return;
+          }
+        } else {
+          url = playerInfo.type === 'movie'
+            ? currentServer.movieLink(playerInfo.tmdbId)
+            : currentServer.episodeLink(playerInfo.tmdbId, playerInfo.season!, playerInfo.episode!);
+        }
+        setCurrentUrl(url);
+      } catch (error) {
+        console.error('Error setting server URL:', error);
+        handleFallback();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    updateUrl();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentServer, playerInfo, imdbId, handleFallback]);
 
   return (
     <DialogContent className="bg-black border-none p-0 max-w-full w-full h-full flex flex-col gap-0 rounded-none">
-      <DialogTitle className="sr-only">{`Player for ${title}`}</DialogTitle>
+      <DialogTitle className="sr-only">{`Player for ${playerInfo.title}`}</DialogTitle>
       <div className="flex-grow bg-black relative group/player">
         {isLoading && <Skeleton className="absolute inset-0" />}
         {!isLoading && currentUrl && (
           <FullscreenVideoPlayer
             src={currentUrl}
-            title={title}
+            title={playerInfo.title}
             isSandboxed={isSandboxed}
             iframeKey={iframeKey}
           />
         )}
 
         <PlayerUI
-          title={title}
+          title={playerInfo.title}
           onClose={onClose}
           currentServer={currentServer}
           serverList={serverList}
@@ -256,10 +253,10 @@ function PlayerUI({
 }: PlayerUIProps) {
   const nodeRef = useRef(null);
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div className="absolute inset-0 pointer-events-none md:group-hover/player:pointer-events-auto">
       
       {/* Top bar - re-enable pointer events here */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 flex justify-between items-center pointer-events-auto">
+      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent opacity-100 md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 flex justify-between items-center pointer-events-auto">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -276,13 +273,13 @@ function PlayerUI({
       </div>
 
       {/* Draggable control panel - re-enable pointer events for the draggable area */}
-      <Draggable nodeRef={nodeRef} handle=".handle">
+      <Draggable nodeRef={nodeRef} handle=".handle" cancel="button, input, textarea, .no-drag">
         <div
           ref={nodeRef}
-          className="absolute top-4 right-4 z-10 md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 pointer-events-auto"
+          className="absolute top-4 right-4 z-10 opacity-100 md:opacity-0 group-hover/player:opacity-100 transition-opacity duration-300 pointer-events-auto"
         >
           <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md p-2 rounded-lg border border-white/10 handle cursor-move">
-            <div className="flex items-center gap-2 px-2">
+            <div className="flex items-center gap-2 px-2 no-drag">
               <Label
                 htmlFor="sandbox-switch"
                 className={cn(
@@ -303,7 +300,7 @@ function PlayerUI({
               <DropdownMenuTrigger asChild>
                 <button
                   title="Try another source"
-                  className="inline-flex items-center justify-center text-white hover:text-accent-foreground"
+                  className="inline-flex items-center justify-center text-white hover:text-accent-foreground no-drag"
                   onClick={e => {
                     if (isLoading) e.preventDefault();
                   }}

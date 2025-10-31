@@ -25,21 +25,6 @@ export function MediaHero({ item, type }: MediaHeroProps) {
     const runtime = isMovie(item) ? item.runtime : (item.episode_run_time && item.episode_run_time.length > 0 ? item.episode_run_time[0] : null);
     const uniqueCountries = [...new Set(item.production_companies.map(c => c.origin_country).filter(Boolean))];
 
-    const playButtonProps = useMemo(() => {
-        if (isMovie(item)) {
-            return { mediaType: 'movie' as const, tmdbId: item.id, title: item.title };
-        } else {
-            const firstSeason = item.seasons.find(s => s.season_number > 0)?.season_number || 1;
-            return {
-                mediaType: 'tv' as const,
-                tmdbId: item.id,
-                season: firstSeason,
-                episode: 1,
-                title: `${item.name} - S${firstSeason}E1`,
-            };
-        }
-    }, [item, isMovie, type]);
-
     return (
         <div className="relative h-auto min-h-[50vh] md:min-h-0 w-full pt-8 md:pt-0">
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
@@ -95,7 +80,21 @@ export function MediaHero({ item, type }: MediaHeroProps) {
                             <ProductionCompanies companies={item.production_companies} />
                         </div>
                         <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                            <PlayButton {...playButtonProps} />
+                            {isMovie(item) ? (
+                                <PlayButton
+                                    mediaType="movie"
+                                    tmdbId={item.id}
+                                    title={item.title}
+                                />
+                            ) : (
+                                <PlayButton
+                                    mediaType="tv"
+                                    tmdbId={item.id}
+                                    season={item.seasons.find(s => s.season_number > 0)?.season_number || 1}
+                                    episode={1}
+                                    title={`${item.name} - S${item.seasons.find(s => s.season_number > 0)?.season_number || 1}E1`}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

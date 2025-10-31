@@ -1,4 +1,6 @@
 
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,7 +10,8 @@ import { Info, PlayCircle } from 'lucide-react';
 import { slugify } from '@/lib/utils';
 import { StarRating } from './StarRating';
 import { Badge } from './ui/badge';
-import { PlayerModal, type PlayerModalInfo } from '@/components/PlayerModal';
+import type { PlayerModalInfo } from '@/components/PlayerModal';
+import { ServerSelectionModal } from './ServerSelectionModal';
 
 type HeroProps = {
   item: (SearchResult | Movie | TVShow) & { genreNames?: string[] };
@@ -78,12 +81,12 @@ export function Hero({ item }: HeroProps) {
             {item.overview}
           </p>
           <div className="flex flex-wrap gap-4">
-            <PlayerModal title={title} playerInfo={playerInfo}>
+            <ServerSelectionModal playerInfo={playerInfo}>
               <Button size="lg" className="font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg shadow-primary/30">
                 <PlayCircle className="mr-2 h-7 w-7" />
                 Play
               </Button>
-            </PlayerModal>
+            </ServerSelectionModal>
             <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 text-white font-bold text-lg transition-all duration-300 hover:scale-105">
               <Link href={`/${media_type}/${itemSlug}-${item.id}`} prefetch={false}>
                 <Info className="mr-2 h-5 w-5" />
@@ -96,3 +99,4 @@ export function Hero({ item }: HeroProps) {
     </div>
   );
 }
+
