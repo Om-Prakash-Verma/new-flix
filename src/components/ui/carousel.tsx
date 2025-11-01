@@ -245,7 +245,7 @@ CarouselNext.displayName = "CarouselNext"
 // App-specific styled carousel
 const Carousel = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative">
+    <div className="relative overflow-hidden">
       <CarouselProvider
         opts={{
           align: 'start',
