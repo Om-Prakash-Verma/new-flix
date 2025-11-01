@@ -1,14 +1,17 @@
 
 'use client';
 
-import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useInView } from 'react-intersection-observer';
 import { searchMulti } from '@/lib/actions';
 import type { SearchResult } from '@/lib/tmdb-schemas';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/media';
+import { PersonListItem, PersonListItemSkeleton } from '@/components/PersonListItem';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useInView } from 'react-intersection-observer';
-import { siteConfig } from '@/config/site';
+import { SearchInput } from '@/components/SearchInput';
+
+export const runtime = 'edge';
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
@@ -16,21 +19,25 @@ function SearchPageContent() {
 
   return (
     <div className="py-8 px-4 sm:px-8">
-      {query ? (
-        <>
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">
-              Search Results for <span className="text-primary">"{query}"</span>
-            </h1>
-            <SearchResults key={query} query={query} />
-          </div>
-        </>
-      ) : (
-        <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-            <h1 className="text-3xl font-bold">Search {siteConfig.name}</h1>
-            <p className="text-muted-foreground mt-2">Find your next favorite movie or TV show.</p>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <SearchInput initialQuery={query} />
         </div>
-      )}
+        
+        {query ? (
+          <>
+            <h1 className="text-3xl font-bold mb-8">
+              Results for <span className="text-primary">&quot;{query}&quot;</span>
+            </h1>
+            <SearchResults query={query} />
+          </>
+        ) : (
+          <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
+            <h1 className="text-3xl font-bold">Search for Movies, TV Shows, and People</h1>
+            <p className="text-muted-foreground mt-2">Find your next favorite thing to watch.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -43,14 +50,6 @@ export default function SearchPage() {
     )
 }
 
-function SearchPageSkeleton() {
-    return (
-        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-             <Skeleton className="h-10 w-1/2 mb-8" />
-             <SearchResultsSkeleton />
-        </div>
-    )
-}
 
 function SearchResults({ query }: { query: string }) {
   const [items, setItems] = useState<SearchResult[]>([]);
@@ -61,75 +60,106 @@ function SearchResults({ query }: { query: string }) {
 
   const { ref: loadMoreRef, inView } = useInView({
     threshold: 0.5,
+    triggerOnce: false,
   });
 
   const hasMore = page < totalPages;
+  const currentQuery = useRef(query);
 
-  const loadItems = useCallback(async (currentPage: number, isInitial: boolean) => {
+  const loadItems = useCallback(async (isNewQuery = false) => {
+    if (isLoading || (!hasMore && !isNewQuery)) return;
+
     setIsLoading(true);
-    if (isInitial) {
-        setIsInitialLoading(true);
+    if (isNewQuery) {
+      setIsInitialLoading(true);
+      setItems([]);
+      setPage(1);
+      currentQuery.current = query;
     }
+    const nextPage = isNewQuery ? 1 : page + 1;
+    
     try {
-        const data = await searchMulti(query, currentPage);
-        setItems(prev => isInitial ? data.results : [...prev, ...data.results]);
-        setTotalPages(data.total_pages);
-        setPage(currentPage);
+      const data = await searchMulti({ query: currentQuery.current, page: nextPage });
+      setItems(prev => {
+        const newItems = data.results.filter(
+          (newItem) => !prev.some(existingItem => existingItem.id === newItem.id)
+        );
+        return isNewQuery ? newItems : [...prev, ...newItems];
+      });
+      setPage(nextPage);
+      setTotalPages(data.total_pages);
     } catch (error) {
-        console.error("Failed to fetch search results", error);
+      console.error("Failed to fetch search results", error);
     } finally {
-        setIsLoading(false);
-        if (isInitial) {
-            setIsInitialLoading(false);
-        }
+      setIsLoading(false);
+      setIsInitialLoading(false);
     }
+  }, [query, isLoading, hasMore, page]);
+  
+  const loadItemsRef = useRef(loadItems);
+  loadItemsRef.current = loadItems;
+
+  useEffect(() => {
+    loadItemsRef.current(true);
   }, [query]);
 
-  // Initial fetch
   useEffect(() => {
-    loadItems(1, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]); // Re-run only when query changes
-
-  // Infinite scroll fetch
-  useEffect(() => {
-    if (inView && !isLoading && hasMore) {
-      loadItems(page + 1, false);
+    if (inView && !isLoading) {
+      loadItemsRef.current();
     }
-  }, [inView, isLoading, hasMore, page, loadItems]);
-  
-  if (isInitialLoading) {
-    return <SearchResultsSkeleton />;
-  }
-  
-  const noResults = items.length === 0 && !isLoading;
+  }, [inView, isLoading]);
 
-  if (noResults) {
-    return <p className="text-muted-foreground">No results found for "{query}".</p>;
+  if (isInitialLoading) {
+    return (
+        <div className="flex flex-col gap-4">
+            {[...Array(3)].map((_, i) => <MediaListItemSkeleton key={i} />)}
+        </div>
+    );
+  }
+
+  if (items.length === 0 && !isLoading) {
+    return <p className="text-muted-foreground">No results found for &quot;{query}&quot;.</p>;
   }
 
   return (
     <>
-        <div className="flex flex-col gap-4">
-            {items.map((item) => (
-                <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type={item.media_type as 'movie' | 'tv'} />
-            ))}
-            {(isLoading && hasMore) && (
-                <>
-                    <MediaListItemSkeleton />
-                    <MediaListItemSkeleton />
-                </>
-            )}
-        </div>
-         <div ref={loadMoreRef} className="h-10" />
+      <div className="flex flex-col gap-4">
+        {items.map((item) => {
+          if (item.media_type === 'movie') {
+            return <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type="movie" />;
+          }
+          if (item.media_type === 'tv') {
+            return <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type="tv" />;
+          }
+          if (item.media_type === 'person') {
+            return <PersonListItem key={`${item.media_type}-${item.id}`} person={item} />;
+          }
+          return null;
+        })}
+        {(isLoading && hasMore) && (
+          <>
+            <MediaListItemSkeleton />
+            <PersonListItemSkeleton />
+            <MediaListItemSkeleton />
+          </>
+        )}
+      </div>
+      <div ref={loadMoreRef} className="h-10" />
     </>
   );
 }
 
-function SearchResultsSkeleton() {
-  return (
-    <div className="flex flex-col gap-4">
-        {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
-    </div>
-  );
+
+function SearchPageSkeleton() {
+    return (
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+             <Skeleton className="h-12 w-full mb-8" />
+             <Skeleton className="h-10 w-1/2 mb-8" />
+             <div className="flex flex-col gap-4">
+                <MediaListItemSkeleton />
+                <MediaListItemSkeleton />
+                <MediaListItemSkeleton />
+            </div>
+        </div>
+    )
 }

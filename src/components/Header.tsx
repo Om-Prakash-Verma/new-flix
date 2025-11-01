@@ -2,13 +2,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Film, Menu, Search, Dices, Compass, Clapperboard, Tv, FileText, ArrowLeft, type LucideIcon } from 'lucide-react';
-import { SearchInput } from './SearchInput';
+import { Film, Menu, Dices, Compass, Clapperboard, Tv, FileText, ArrowLeft, type LucideIcon } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, Separator } from '@/components/ui/layout';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialogs';
 import { SurpriseMeButton } from './SurpriseMeButton';
+import { SearchInput } from './SearchInput';
 
 export function Header() {
   return (
@@ -34,10 +33,9 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <div className="hidden md:block w-full max-w-sm">
-            <SearchInput />
-          </div>
-          <MobileSearch />
+           <div className="hidden md:block w-full max-w-sm">
+             <SearchInput />
+           </div>
           <SurpriseMeButton />
         </div>
       </div>
@@ -74,6 +72,9 @@ function MobileNav() {
         </SheetHeader>
         <div className="flex flex-col h-full">
             <div className="flex-1 p-4 space-y-6">
+                <div className="p-2">
+                    <SearchInput />
+                </div>
                 <div>
                     <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">MENU</h3>
                     <nav className="flex flex-col gap-1">
@@ -124,27 +125,5 @@ function MobileNav() {
         </div>
       </SheetContent>
     </Sheet>
-  );
-}
-
-
-function MobileSearch() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Search className="h-6 w-6" />
-          <span className="sr-only">Open Search</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="top-0 translate-y-0 h-[50vh] max-h-[300px] bg-background/90 backdrop-blur-lg border-b border-border data-[state=closed]:slide-out-to-top-full data-[state=open]:slide-in-from-top-full rounded-t-none">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Search {siteConfig.name}</DialogTitle>
-        </DialogHeader>
-        <div className="flex items-center h-full">
-            <SearchInput />
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 }

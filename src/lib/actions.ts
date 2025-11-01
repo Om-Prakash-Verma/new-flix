@@ -56,17 +56,33 @@ export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverM
     }
 }
 
+// --- From actions/search.ts ---
 
-export async function searchMulti(query: string, page = 1) {
-    const schema = pagedResponseSchema(searchResultSchema);
-    const data = await fetchTMDB('search/multi', { query, page: String(page) }, schema);
-    
+type SearchMultiParams = {
+    query: string;
+    page: number;
+};
+
+export async function searchMulti({ query, page }: SearchMultiParams): Promise<{ results: SearchResult[], total_pages: number }> {
+    const searchSchema = pagedResponseSchema(searchResultSchema);
+    const params = {
+        query,
+        page,
+        include_adult: 'false',
+    };
+    const data = await fetchTMDB('search/multi', params, searchSchema);
+
     if (!data) {
-      return { results: [], total_pages: 0, page: 1, total_results: 0 };
+        return { results: [], total_pages: 0 };
     }
-  
-    // Filter out people from the search results, as we only want movies and TV shows
-    data.results = data.results.filter(item => item.media_type !== 'person');
-  
-    return data;
+    
+    // Filter out results that don't have a poster or profile path
+    const filteredResults = data.results.filter(item => {
+        if (item.media_type === 'person') {
+            return item.profile_path;
+        }
+        return item.poster_path;
+    });
+
+    return { results: filteredResults, total_pages: data.total_pages };
 }
