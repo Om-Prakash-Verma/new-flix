@@ -13,13 +13,13 @@ export async function GET(
   if (!API_KEY) {
     return new NextResponse('TMDB_API_KEY is not configured', { status: 500 });
   }
-    
+
   const { searchParams } = new URL(request.url);
   const path = params.path.join('/');
-  
+
   const url = new URL(`${API_BASE_URL}/${path}`);
   url.searchParams.append('api_key', API_KEY);
-  
+
   searchParams.forEach((value, key) => {
     url.searchParams.append(key, value);
   });

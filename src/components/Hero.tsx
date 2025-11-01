@@ -74,53 +74,53 @@ export function Hero({ item }: HeroProps) {
 
       <div className="relative z-10 flex h-full items-end md:items-center px-4 sm:px-8 pb-12 md:pb-0">
         <div className="w-full flex flex-col md:flex-row items-center gap-8 max-w-6xl mx-auto">
-            <div className="w-full max-w-[200px] md:w-1/4 flex-shrink-0">
-                <Image 
-                    src={getPosterImage(item.poster_path, 'w500')}
-                    alt={`Poster for ${title}`}
-                    width={500}
-                    height={750}
-                    className="rounded-poster shadow-2xl hidden md:block"
-                    priority
-                    data-ai-hint="movie poster"
-                />
+          <div className="w-full max-w-[200px] md:w-1/4 flex-shrink-0">
+            <Image
+              src={getPosterImage(item.poster_path, 'w500')}
+              alt={`Poster for ${title}`}
+              width={500}
+              height={750}
+              className="rounded-poster shadow-2xl hidden md:block"
+              priority
+              data-ai-hint="movie poster"
+            />
+          </div>
+          <div className="w-full md:w-3/4 text-center md:text-left">
+            <p className="text-primary font-bold tracking-widest uppercase text-sm mb-2 text-shadow">{media_type === "movie" ? "Movie" : "TV Show"}</p>
+            <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-4 text-shadow-lg">
+              {title}
+            </h1>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4 text-shadow">
+              <StarRating rating={item.vote_average} />
+              <span className="text-lg font-semibold">{year}</span>
             </div>
-            <div className="w-full md:w-3/4 text-center md:text-left">
-                <p className="text-primary font-bold tracking-widest uppercase text-sm mb-2 text-shadow">{media_type === "movie" ? "Movie" : "TV Show"}</p>
-                <h1 className="text-4xl md:text-7xl font-black tracking-tighter mb-4 text-shadow-lg">
-                    {title}
-                </h1>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-4 text-shadow">
-                    <StarRating rating={item.vote_average} />
-                    <span className="text-lg font-semibold">{year}</span>
-                </div>
-                {item.genreNames && (
-                    <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
-                    {item.genreNames.slice(0, 4).map((genreName) => (
-                        <Badge key={genreName} variant="outline" className="bg-black/20 backdrop-blur-sm border-white/20 text-white">
-                        {genreName}
-                        </Badge>
-                    ))}
-                    </div>
-                )}
-                <p className="text-sm md:text-base text-foreground/80 line-clamp-3 mb-8 max-w-2xl text-shadow mx-auto md:mx-0">
-                    {item.overview}
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
-                    <ServerSelectionModal playerInfo={playerInfo}>
-                    <Button size="lg" className="font-bold text-lg w-full sm:w-auto transition-all duration-300 hover:scale-105 shadow-lg shadow-primary/30">
-                        <PlayCircle className="mr-2 h-7 w-7" />
-                        Play
-                    </Button>
-                    </ServerSelectionModal>
-                    <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 text-white font-bold text-lg w-full sm:w-auto transition-all duration-300 hover:scale-105">
-                    <Link href={`/${media_type}/${itemSlug}-${item.id}`} prefetch={false}>
-                        <Info className="mr-2 h-5 w-5" />
-                        More Info
-                    </Link>
-                    </Button>
-                </div>
+            {item.genreNames && (
+              <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
+                {item.genreNames.slice(0, 4).map((genreName) => (
+                  <Badge key={genreName} variant="outline" className="bg-black/20 backdrop-blur-sm border-white/20 text-white">
+                    {genreName}
+                  </Badge>
+                ))}
+              </div>
+            )}
+            <p className="text-sm md:text-base text-foreground/80 line-clamp-3 mb-8 max-w-2xl text-shadow mx-auto md:mx-0">
+              {item.overview}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+              <ServerSelectionModal playerInfo={playerInfo}>
+                <Button size="lg" className="font-bold text-lg w-full sm:w-auto transition-all duration-300 hover:scale-105 shadow-lg shadow-primary/30">
+                  <PlayCircle className="mr-2 h-7 w-7" />
+                  Play
+                </Button>
+              </ServerSelectionModal>
+              <Button asChild size="lg" variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20 text-white font-bold text-lg w-full sm:w-auto transition-all duration-300 hover:scale-105">
+                <Link href={`/${media_type}/${itemSlug}-${item.id}`} prefetch={false}>
+                  <Info className="mr-2 h-5 w-5" />
+                  More Info
+                </Link>
+              </Button>
             </div>
+          </div>
         </div>
       </div>
     </div>

@@ -11,12 +11,12 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Hand-picked collection IDs from TMDB
 const featuredCollectionIds = [
-    10,   // Star Wars Collection
-    86311,// The Avengers Collection
-    295,  // Pirates of the Caribbean Collection
-    1241, // Harry Potter Collection
-    119,  // The Lord of the Rings Collection
-    263,  // The Dark Knight Trilogy
+  10,   // Star Wars Collection
+  86311,// The Avengers Collection
+  295,  // Pirates of the Caribbean Collection
+  1241, // Harry Potter Collection
+  119,  // The Lord of the Rings Collection
+  263,  // The Dark Knight Trilogy
 ];
 
 export async function FeaturedCollections() {

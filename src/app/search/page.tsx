@@ -23,7 +23,7 @@ function SearchPageContent() {
         <div className="mb-8">
           <SearchInput initialQuery={query} />
         </div>
-        
+
         {query ? (
           <>
             <h1 className="text-3xl font-bold mb-8">
@@ -43,11 +43,11 @@ function SearchPageContent() {
 }
 
 export default function SearchPage() {
-    return (
-        <Suspense fallback={<SearchPageSkeleton />}>
-            <SearchPageContent />
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={<SearchPageSkeleton />}>
+      <SearchPageContent />
+    </Suspense>
+  )
 }
 
 
@@ -77,7 +77,7 @@ function SearchResults({ query }: { query: string }) {
       currentQuery.current = query;
     }
     const nextPage = isNewQuery ? 1 : page + 1;
-    
+
     try {
       const data = await searchMulti({ query: currentQuery.current, page: nextPage });
       setItems(prev => {
@@ -95,7 +95,7 @@ function SearchResults({ query }: { query: string }) {
       setIsInitialLoading(false);
     }
   }, [query, isLoading, hasMore, page]);
-  
+
   const loadItemsRef = useRef(loadItems);
   loadItemsRef.current = loadItems;
 
@@ -111,9 +111,9 @@ function SearchResults({ query }: { query: string }) {
 
   if (isInitialLoading) {
     return (
-        <div className="flex flex-col gap-4">
-            {[...Array(3)].map((_, i) => <MediaListItemSkeleton key={i} />)}
-        </div>
+      <div className="flex flex-col gap-4">
+        {[...Array(3)].map((_, i) => <MediaListItemSkeleton key={i} />)}
+      </div>
     );
   }
 
@@ -151,15 +151,15 @@ function SearchResults({ query }: { query: string }) {
 
 
 function SearchPageSkeleton() {
-    return (
-        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-             <Skeleton className="h-12 w-full mb-8" />
-             <Skeleton className="h-10 w-1/2 mb-8" />
-             <div className="flex flex-col gap-4">
-                <MediaListItemSkeleton />
-                <MediaListItemSkeleton />
-                <MediaListItemSkeleton />
-            </div>
-        </div>
-    )
+  return (
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+      <Skeleton className="h-12 w-full mb-8" />
+      <Skeleton className="h-10 w-1/2 mb-8" />
+      <div className="flex flex-col gap-4">
+        <MediaListItemSkeleton />
+        <MediaListItemSkeleton />
+        <MediaListItemSkeleton />
+      </div>
+    </div>
+  )
 }

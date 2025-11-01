@@ -2,15 +2,15 @@
 'use server';
 
 import {
-  movieSchema,
-  tvSchema,
-  pagedResponseSchema,
-  searchResultSchema,
-  type Movie,
-  type TVShow,
-  type SearchResult,
+    movieSchema,
+    tvSchema,
+    pagedResponseSchema,
+    searchResultSchema,
+    type Movie,
+    type TVShow,
+    type SearchResult,
 } from './tmdb-schemas';
-import { fetchPagedData } from './tmdb';
+import { fetchTMDB, fetchPagedData } from './tmdb';
 import { z } from 'zod';
 
 // --- From actions/discover.ts ---
@@ -56,91 +56,6 @@ export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverM
     }
 }
 
-type FetchMediaByGenreParams = {
-    genreId: string;
-    page: number;
-}
-
-export async function fetchMediaByGenre({ genreId, page }: FetchMediaByGenreParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const [movieData, tvData] = await Promise.all([
-        fetchPagedData('discover/movie', { with_genres: String(genreId), page: String(page) }, movieSchema),
-        fetchPagedData('discover/tv', { with_genres: String(genreId), page: String(page) }, tvSchema)
-    ]);
-
-    const results = [
-        ...movieData.results,
-        ...tvData.results
-    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    
-    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
-
-    return { results, total_pages };
-}
-
-type FetchMediaByYearParams = {
-    year: string;
-    page: number;
-}
-
-export async function fetchMediaByYear({ year, page }: FetchMediaByYearParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const [movieData, tvData] = await Promise.all([
-        fetchPagedData('discover/movie', { primary_release_year: year, page: String(page) }, movieSchema),
-        fetchPagedData('discover/tv', { first_air_date_year: year, page: String(page) }, tvSchema)
-    ]);
-
-    const results = [
-        ...movieData.results,
-        ...tvData.results
-    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    
-    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
-
-    return { results, total_pages };
-}
-
-type FetchMediaByCountryParams = {
-    countryCode: string;
-    page: number;
-}
-
-export async function fetchMediaByCountry({ countryCode, page }: FetchMediaByCountryParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const [movieData, tvData] = await Promise.all([
-        fetchPagedData('discover/movie', { with_origin_country: countryCode, page: String(page) }, movieSchema),
-        fetchPagedData('discover/tv', { with_origin_country: countryCode, page: String(page) }, tvSchema)
-    ]);
-
-    const results = [
-        ...movieData.results,
-        ...tvData.results
-    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    
-    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
-
-    return { results, total_pages };
-}
-
-type FetchMediaByCompanyParams = {
-    companyId: string;
-    page: number;
-}
-
-export async function fetchMediaByCompany({ companyId, page }: FetchMediaByCompanyParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const [movieData, tvData] = await Promise.all([
-        fetchPagedData('discover/movie', { with_companies: String(companyId), page: String(page) }, movieSchema),
-        fetchPagedData('discover/tv', { with_companies: String(companyId), page: String(page) }, tvSchema)
-    ]);
-
-    const results = [
-        ...movieData.results,
-        ...tvData.results
-    ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-    
-    const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
-
-    return { results, total_pages };
-}
-
-
 // --- From actions/search.ts ---
 
 type SearchMultiParams = {
@@ -155,12 +70,12 @@ export async function searchMulti({ query, page }: SearchMultiParams): Promise<{
         page,
         include_adult: 'false',
     };
-    const data = await fetchPagedData('search/multi', params, searchSchema);
+    const data = await fetchTMDB('search/multi', params, searchSchema);
 
     if (!data) {
         return { results: [], total_pages: 0 };
     }
-    
+
     // Filter out results that don't have a poster or profile path
     const filteredResults = data.results.filter(item => {
         if (item.media_type === 'person') {

@@ -65,7 +65,7 @@ export const serverList: Server[] = [
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://player.vidsrc.co/embed/tv/${tmdbId}/${season}/${episode}`,
   },
 
-
+  
   // Regular Servers (Ads)
   {
     id: 10,

@@ -134,7 +134,7 @@ export const fetchAllHomepageData = async () => {
     fetchPagedData("trending/movie/week", { region: "US", language: "en-US" }, movieSchema),
     fetchPagedData("tv/popular", { language: "en-US" }, tvSchema),
     fetchPagedData("tv/top_rated", { language: "en-US" }, tvSchema),
-    fetchPagedData("trending/tv/week", { region: "US", language: "en-US" }, tvSchema),
+    fetchPagedData("trending/tv/week", { language: "en-US" }, tvSchema),
   ]);
 
   return {
@@ -148,38 +148,38 @@ export const fetchAllHomepageData = async () => {
 };
 
 export async function getRecentlyReleased(country?: string) {
-    const today = new Date();
-    const threeMonthsAgo = subMonths(today, 3);
-    
-    const baseParams: Record<string, string | number> = {
-        sort_by: 'popularity.desc',
-        'vote_count.gte': 50,
-    };
+  const today = new Date();
+  const threeMonthsAgo = subMonths(today, 3);
 
-    if (country && country !== 'all') {
-        baseParams.with_origin_country = country;
-    }
+  const baseParams: Record<string, string | number> = {
+    sort_by: 'popularity.desc',
+    'vote_count.gte': 50,
+  };
 
-    const movieParams = {
-        ...baseParams,
-        'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
-        'primary_release_date.lte': today.toISOString().split('T')[0],
-    }
+  if (country && country !== 'all') {
+    baseParams.with_origin_country = country;
+  }
 
-    const tvParams = {
-        ...baseParams,
-        'first_air_date.gte': threeMonthsAgo.toISOString().split('T')[0],
-        'first_air_date.lte': today.toISOString().split('T')[0],
-    }
+  const movieParams = {
+    ...baseParams,
+    'primary_release_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+    'primary_release_date.lte': today.toISOString().split('T')[0],
+  }
 
-    const [movies, tvShows] = await Promise.all([
-        fetchPagedData('discover/movie', movieParams, movieSchema),
-        fetchPagedData('discover/tv', tvParams, tvSchema),
-    ]);
-    
-    const combined = [...movies.results, ...tvShows.results];
+  const tvParams = {
+    ...baseParams,
+    'first_air_date.gte': threeMonthsAgo.toISOString().split('T')[0],
+    'first_air_date.lte': today.toISOString().split('T')[0],
+  }
 
-    return combined.sort((a,b) => (b.popularity || 0) - (a.popularity || 0));
+  const [movies, tvShows] = await Promise.all([
+    fetchPagedData('discover/movie', movieParams, movieSchema),
+    fetchPagedData('discover/tv', tvParams, tvSchema),
+  ]);
+
+  const combined = [...movies.results, ...tvShows.results];
+
+  return combined.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 }
 
 // --- Configuration Fetchers ---
@@ -232,33 +232,117 @@ export async function getExternalIds(mediaType: 'movie' | 'tv', tmdbId: string |
 }
 
 export async function getMovieRecommendations(movieId: string | number, page = 1) {
-    return fetchPagedData(`movie/${movieId}/recommendations`, { page }, movieSchema);
+  return fetchPagedData(`movie/${movieId}/recommendations`, { page }, movieSchema);
 }
 
 export async function getTvRecommendations(tvId: string | number, page = 1) {
-    return fetchPagedData(`tv/${tvId}/recommendations`, { page }, tvSchema);
+  return fetchPagedData(`tv/${tvId}/recommendations`, { page }, tvSchema);
 }
 
 export async function getMovieReviews(movieId: string | number, page = 1) {
-    return fetchPagedData(`movie/${movieId}/reviews`, { page }, reviewSchema);
+  return fetchPagedData(`movie/${movieId}/reviews`, { page }, reviewSchema);
 }
 
 export async function getTvReviews(tvId: string | number, page = 1) {
-    return fetchPagedData(`tv/${tvId}/reviews`, { page }, reviewSchema);
+  return fetchPagedData(`tv/${tvId}/reviews`, { page }, reviewSchema);
 }
 
 export async function fetchRecommendations(type: 'movie' | 'tv', id: number, page: number) {
-    if (type === 'movie') {
-        return getMovieRecommendations(id, page);
-    }
-    return getTvRecommendations(id, page);
+  if (type === 'movie') {
+    return getMovieRecommendations(id, page);
+  }
+  return getTvRecommendations(id, page);
 }
 
 export async function fetchReviews(type: 'movie' | 'tv', id: number, page: number) {
-    if (type === 'movie') {
-        return getMovieReviews(id, page);
-    }
-    return getTvReviews(id, page);
+  if (type === 'movie') {
+    return getMovieReviews(id, page);
+  }
+  return getTvReviews(id, page);
+}
+
+type FetchMediaByGenreParams = {
+  genreId: string;
+  page: number;
+}
+
+export async function fetchMediaByGenre({ genreId, page }: FetchMediaByGenreParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+  const [movieData, tvData] = await Promise.all([
+    fetchPagedData('discover/movie', { with_genres: String(genreId), page: String(page) }, movieSchema),
+    fetchPagedData('discover/tv', { with_genres: String(genreId), page: String(page) }, tvSchema)
+  ]);
+
+  const results = [
+    ...movieData.results,
+    ...tvData.results
+  ];
+
+  const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+  return { results, total_pages };
+}
+
+type FetchMediaByYearParams = {
+  year: string;
+  page: number;
+}
+
+export async function fetchMediaByYear({ year, page }: FetchMediaByYearParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+  const [movieData, tvData] = await Promise.all([
+    fetchPagedData('discover/movie', { primary_release_year: year, page: String(page) }, movieSchema),
+    fetchPagedData('discover/tv', { first_air_date_year: year, page: String(page) }, tvSchema)
+  ]);
+
+  const results = [
+    ...movieData.results,
+    ...tvData.results
+  ];
+
+  const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+  return { results, total_pages };
+}
+
+type FetchMediaByCountryParams = {
+  countryCode: string;
+  page: number;
+}
+
+export async function fetchMediaByCountry({ countryCode, page }: FetchMediaByCountryParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+  const [movieData, tvData] = await Promise.all([
+    fetchPagedData('discover/movie', { with_origin_country: countryCode, page: String(page) }, movieSchema),
+    fetchPagedData('discover/tv', { with_origin_country: countryCode, page: String(page) }, tvSchema)
+  ]);
+
+  const results = [
+    ...movieData.results,
+    ...tvData.results
+  ];
+
+  const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+  return { results, total_pages };
+}
+
+type FetchMediaByCompanyParams = {
+  companyId: string;
+  page: number;
+}
+
+export async function fetchMediaByCompany({ companyId, page }: FetchMediaByCompanyParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
+  const [movieData, tvData] = await Promise.all([
+    fetchPagedData('discover/movie', { with_companies: String(companyId), page: String(page) }, movieSchema),
+    fetchPagedData('discover/tv', { with_companies: String(companyId), page: String(page) }, tvSchema)
+  ]);
+
+  const results = [
+    ...movieData.results,
+    ...tvData.results
+  ];
+
+  const total_pages = Math.max(movieData.total_pages, tvData.total_pages);
+
+  return { results, total_pages };
 }
 
 
@@ -318,7 +402,7 @@ export type EmbedFallbackOutput = z.infer<typeof EmbedFallbackOutputSchema>;
 
 export async function getEmbedFallback(input: EmbedFallbackInput): Promise<EmbedFallbackOutput> {
   const currentIndex = input.servers.indexOf(input.currentServer);
-  
+
   if (currentIndex >= 0 && currentIndex < input.servers.length - 1) {
     const nextServer = input.servers[currentIndex + 1];
     return {

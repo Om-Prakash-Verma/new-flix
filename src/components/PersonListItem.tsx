@@ -45,13 +45,13 @@ export function PersonListItem({ person }: PersonListItemProps) {
 export function PersonListItemSkeleton() {
   return (
     <Card className="flex items-center gap-4 p-3 bg-card/80 rounded-lg h-[92px] md:h-[112px]">
-        <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0">
-            <Skeleton className="aspect-square rounded-full" />
-        </div>
-        <div className="flex-grow space-y-2 mt-1 w-full">
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-1/4" />
-        </div>
+      <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0">
+        <Skeleton className="aspect-square rounded-full" />
+      </div>
+      <div className="flex-grow space-y-2 mt-1 w-full">
+        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-4 w-1/4" />
+      </div>
     </Card>
   );
 }

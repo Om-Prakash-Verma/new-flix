@@ -30,9 +30,9 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <div className="w-full max-w-xs sm:max-w-sm">
-             <SearchInput />
-           </div>
+          <div className="w-full max-w-xs sm:max-w-sm">
+            <SearchInput />
+          </div>
           <SurpriseMeButton />
         </div>
       </div>
