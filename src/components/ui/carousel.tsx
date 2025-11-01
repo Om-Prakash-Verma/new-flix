@@ -163,7 +163,7 @@ const CarouselContent = React.forwardRef<
         ref={ref}
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal" ? "" : "-mt-4 flex-col",
           className
         )}
         {...props}
@@ -245,7 +245,7 @@ CarouselNext.displayName = "CarouselNext"
 // App-specific styled carousel
 const Carousel = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative -mx-4 sm:-mx-8">
       <CarouselProvider
         opts={{
           align: 'start',
@@ -253,9 +253,9 @@ const Carousel = ({ children }: { children: React.ReactNode }) => {
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-4 px-4 sm:px-8 items-start">
+        <CarouselContent className="items-start">
           {React.Children.map(children, (child, index) => (
-            <CarouselItem key={index} className="pl-4 basis-auto" style={{ flex: '0 0 190px' }}>
+            <CarouselItem key={index} className="basis-auto" style={{ flex: '0 0 190px' }}>
               {child}
             </CarouselItem>
           ))}

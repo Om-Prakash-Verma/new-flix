@@ -1,5 +1,4 @@
 
-
 import type { Metadata } from 'next';
 import { HeroSlideshow } from '@/components/Hero';
 import {
@@ -107,8 +106,8 @@ async function HomePage() {
           <RecentlyReleased />
 
           {carousels.map(carousel => (
-            <section key={carousel.title}>
-              <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">{carousel.title}</h2>
+            <section key={carousel.title} className="px-4 sm:px-8">
+              <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">{carousel.title}</h2>
               <Carousel>
                 {carousel.items.map((item) => {
                   const itemType = 'title' in item ? 'movie' : 'tv';

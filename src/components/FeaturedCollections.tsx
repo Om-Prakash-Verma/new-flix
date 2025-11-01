@@ -35,7 +35,7 @@ export async function FeaturedCollections() {
       <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">
         Featured Collections
       </h2>
-      <div className="overflow-hidden">
+      <div className="relative -mx-4 sm:-mx-8">
         <ShadcnCarousel
           opts={{
             align: 'start',
@@ -43,17 +43,17 @@ export async function FeaturedCollections() {
           }}
           className="w-full"
         >
-          <CarouselContent className="-ml-4 px-4 sm:px-8">
+          <CarouselContent className="items-start">
             {validCollections.map((collection) => (
-              <CarouselItem key={collection.id} className="pl-4 basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+              <CarouselItem key={collection.id} className="basis-4/5 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                 <InternalCollectionCard collection={collection} />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-background/50 backdrop-blur-sm hover:bg-background/80 border-2 border-primary/50 text-primary hover:border-primary transition-all duration-300 disabled:opacity-0 disabled:scale-90" >
+          <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 h-10 w-10 bg-background/50 backdrop-blur-sm hover:bg-background/80 border-2 border-primary/50 text-primary hover:border-primary transition-all duration-300 disabled:opacity-0 disabled:scale-90" >
             <ChevronLeft className="h-6 w-6" />
           </CarouselPrevious>
-          <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-background/50 backdrop-blur-sm hover:bg-background/80 border-2 border-primary/50 text-primary hover:border-primary transition-all duration-300 disabled:opacity-0 disabled:scale-90" >
+          <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 h-10 w-10 bg-background/50 backdrop-blur-sm hover:bg-background/80 border-2 border-primary/50 text-primary hover:border-primary transition-all duration-300 disabled:opacity-0 disabled:scale-90" >
             <ChevronRight className="h-6 w-6" />
           </CarouselNext>
         </ShadcnCarousel>
