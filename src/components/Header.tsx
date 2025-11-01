@@ -17,7 +17,7 @@ export function Header() {
           <MobileNav />
           <Link href="/" className="mr-8 flex items-center space-x-2" prefetch={false}>
             <Film className="h-8 w-8 text-primary" />
-            <span className="font-black text-2xl sm:inline-block tracking-tighter">{siteConfig.name}</span>
+            <span className="hidden sm:inline-block font-black text-2xl tracking-tighter">{siteConfig.name}</span>
           </Link>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-medium">
             {siteConfig.mainNav.map((item) => (
@@ -33,7 +33,7 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <div className="hidden md:block w-full max-w-sm">
+           <div className="w-full max-w-sm">
              <SearchInput />
            </div>
           <SurpriseMeButton />
@@ -72,9 +72,6 @@ function MobileNav() {
         </SheetHeader>
         <div className="flex flex-col h-full">
             <div className="flex-1 p-4 space-y-6">
-                <div className="p-2">
-                    <SearchInput />
-                </div>
                 <div>
                     <h3 className="text-sm font-semibold text-muted-foreground px-2 mb-2">MENU</h3>
                     <nav className="flex flex-col gap-1">
