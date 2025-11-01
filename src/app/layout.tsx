@@ -8,6 +8,8 @@ import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { AdScripts } from '@/components/AdScripts';
 import { Inter, Roboto_Flex } from 'next/font/google';
+import { Organization } from 'schema-dts';
+import { jsonLd } from '@/lib/utils';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -64,9 +66,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const organizationSchema: Organization = {
+    '@type': 'Organization',
+    name: siteConfig.name,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/icon.png`,
+  };
+
   return (
     <html lang="en" className={cn('dark', inter.variable, robotoFlex.variable)}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLd(organizationSchema)}
+        />
         <AdScripts />
       </head>
       <body 

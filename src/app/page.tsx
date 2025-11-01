@@ -1,5 +1,6 @@
 
 
+import type { Metadata } from 'next';
 import { HeroSlideshow } from '@/components/Hero';
 import {
   fetchAllHomepageData,
@@ -11,9 +12,17 @@ import { RecentlyReleased } from '@/components/RecentlyReleased';
 import { FeaturedCollections } from '@/components/FeaturedCollections';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { BackgroundImage } from '@/components/media/details';
-import { getPosterImage, getBackdropImage } from '@/lib/utils';
+import { getPosterImage, getBackdropImage, jsonLd } from '@/lib/utils';
+import type { WebSite } from 'schema-dts';
+import { siteConfig } from '@/config/site';
 
 export const runtime = 'edge';
+
+export const metadata: Metadata = {
+    alternates: {
+        canonical: '/',
+    },
+};
 
 // Function to shuffle content for the hero slideshow
 function shuffleContent(items: (Movie | TVShow)[]) {
@@ -71,30 +80,47 @@ async function HomePage() {
     { title: "Trending TV Shows This Week", items: trendingTVShows, type: 'tv' as const },
   ].filter(c => c.items && c.items.length > 0);
 
+  const websiteSchema: WebSite = {
+    '@type': 'WebSite',
+    name: siteConfig.name,
+    url: siteConfig.url,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteConfig.url}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
-    <div className="flex flex-col">
-      <BackgroundImage posterUrl={backgroundPosterUrl} backdropUrl={backgroundBackdropUrl} />
-      {slideshowItems.length > 0 && <HeroSlideshow items={slideshowItems} />}
-      <div className="flex flex-col space-y-12 py-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(websiteSchema)}
+      />
+      <div className="flex flex-col">
+        <BackgroundImage posterUrl={backgroundPosterUrl} backdropUrl={backgroundBackdropUrl} />
+        {slideshowItems.length > 0 && <HeroSlideshow items={slideshowItems} />}
+        <div className="flex flex-col space-y-12 py-12">
 
-        <FeaturedCollections />
+          <FeaturedCollections />
 
-        <RecentlyReleased />
+          <RecentlyReleased />
 
-        {carousels.map(carousel => (
-          <section key={carousel.title}>
-            <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">{carousel.title}</h2>
-            <Carousel>
-              {carousel.items.map((item) => {
-                const itemType = 'title' in item ? 'movie' : 'tv';
-                return <PosterCard key={item.id} item={item} type={itemType as 'movie' | 'tv'} />;
-              })}
-            </Carousel>
-          </section>
-        ))}
+          {carousels.map(carousel => (
+            <section key={carousel.title}>
+              <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">{carousel.title}</h2>
+              <Carousel>
+                {carousel.items.map((item) => {
+                  const itemType = 'title' in item ? 'movie' : 'tv';
+                  return <PosterCard key={item.id} item={item} type={itemType as 'movie' | 'tv'} />;
+                })}
+              </Carousel>
+            </section>
+          ))}
 
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

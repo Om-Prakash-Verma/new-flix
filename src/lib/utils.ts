@@ -2,6 +2,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import data from './placeholder-images.json';
+import { Thing, WithContext } from 'schema-dts';
 
 //================================================================//
 // UTILS from src/lib/utils.ts
@@ -51,6 +52,15 @@ export function formatRuntime(minutes: number | null) {
     const mins = minutes % 60;
     if (mins === 0) return `${hours}h`;
     return `${hours}h ${mins}m`;
+}
+
+export function jsonLd<T extends Thing>(data: WithContext<T>) {
+  return {
+    __html: JSON.stringify({
+      '@context': 'https://schema.org',
+      ...data,
+    }),
+  };
 }
 
 //================================================================//

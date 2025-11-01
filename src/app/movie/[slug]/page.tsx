@@ -2,10 +2,11 @@
 
 import { notFound } from 'next/navigation';
 import { getMovieDetails, getMovieRecommendations, getMovieReviews } from '@/lib/tmdb';
-import { extractIdFromSlug, getBackdropImage, getPosterImage } from '@/lib/utils';
+import { extractIdFromSlug, getBackdropImage, getPosterImage, jsonLd } from '@/lib/utils';
 import { CreditsCarousel, BackgroundImage, MediaHero, TrailersCarousel, WatchProviders, Recommendations, Reviews } from '@/components/media/details';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
+import type { Movie } from 'schema-dts';
 
 type MoviePageProps = {
   params: {
@@ -100,27 +101,62 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   const watchProviders = movie['watch/providers']?.results.US;
 
+  const director = movie.credits.crew.find(
+    (person) => person.job === 'Director'
+  );
+
+  const movieSchema: Movie = {
+    '@type': 'Movie',
+    name: movie.title,
+    description: movie.overview,
+    image: getPosterImage(movie.poster_path, 'original'),
+    datePublished: movie.release_date,
+    director: director ? { '@type': 'Person', name: director.name } : undefined,
+    actor: movie.credits.cast.slice(0, 10).map(person => ({
+        '@type': 'Person',
+        name: person.name,
+    })),
+    aggregateRating: movie.vote_count > 0 ? {
+        '@type': 'AggregateRating',
+        ratingValue: movie.vote_average,
+        bestRating: 10,
+        ratingCount: movie.vote_count,
+    } : undefined,
+    trailer: movie.videos?.results.find(v => v.type === 'Trailer' && v.official) ? {
+        '@type': 'VideoObject',
+        name: movie.videos.results.find(v => v.type === 'Trailer' && v.official)!.name,
+        embedUrl: `https://www.youtube.com/watch?v=${movie.videos.results.find(v => v.type === 'Trailer' && v.official)!.key}`,
+        thumbnailUrl: `https://img.youtube.com/vi/${movie.videos.results.find(v => v.type === 'Trailer' && v.official)!.key}/hqdefault.jpg`,
+    } : undefined,
+  };
+
   return (
-    <div className="flex flex-col">
-      <BackgroundImage posterUrl={getPosterImage(movie.poster_path)} backdropUrl={getBackdropImage(movie.backdrop_path)} />
-      
-      <div className="relative z-10">
-        <MediaHero item={movie} type="movie" />
+    <>
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLd(movieSchema)}
+      />
+      <div className="flex flex-col">
+        <BackgroundImage posterUrl={getPosterImage(movie.poster_path)} backdropUrl={getBackdropImage(movie.backdrop_path)} />
+        
+        <div className="relative z-10">
+          <MediaHero item={movie} type="movie" />
+        </div>
+
+        <div className="py-12 space-y-12 px-4 sm:px-8">
+          
+          {watchProviders && <WatchProviders providers={watchProviders} />}
+          
+          <TrailersCarousel videos={movie.videos?.results || []} />
+          
+          <CreditsCarousel credits={movie.credits.cast} title="Cast" />
+
+          <Recommendations id={movie.id} type="movie" initialData={recommendations} />
+
+          <Reviews id={movie.id} type="movie" initialData={reviews} />
+
+        </div>
       </div>
-
-      <div className="py-12 space-y-12 px-4 sm:px-8">
-        
-        {watchProviders && <WatchProviders providers={watchProviders} />}
-        
-        <TrailersCarousel videos={movie.videos?.results || []} />
-        
-        <CreditsCarousel credits={movie.credits.cast} title="Cast" />
-
-        <Recommendations id={movie.id} type="movie" initialData={recommendations} />
-
-        <Reviews id={movie.id} type="movie" initialData={reviews} />
-
-      </div>
-    </div>
+    </>
   );
 }
