@@ -1,13 +1,13 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import type { Movie, TVShow } from '@/lib/tmdb-schemas';
 import { getRecentlyReleased } from '@/lib/tmdb';
-import { Carousel } from '@/components/Carousel';
-import { PosterCard, PosterCardSkeleton } from '@/components/PosterCard';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Carousel } from '@/components/ui/carousel';
+import { PosterCard, PosterCardSkeleton } from '@/components/media';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from "@/components/ui/forms";
 
 const topCountries: Record<string, string> = {
     'US': 'United States',

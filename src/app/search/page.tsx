@@ -5,7 +5,7 @@ import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { searchMulti } from '@/lib/tmdb';
 import type { SearchResult } from '@/lib/tmdb-schemas';
-import { MediaListItem, MediaListItemSkeleton } from '@/components/MediaListItem';
+import { MediaListItem, MediaListItemSkeleton } from '@/components/media';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useInView } from 'react-intersection-observer';
 import { siteConfig } from '@/config/site';

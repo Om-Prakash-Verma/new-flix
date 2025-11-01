@@ -2,13 +2,12 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getPersonDetails } from '@/lib/tmdb';
-import { getProfileImage } from '@/lib/tmdb-images';
-import { extractIdFromSlug } from '@/lib/utils';
-import { PosterCard } from '@/components/PosterCard';
-import { Carousel } from '@/components/Carousel';
+import { extractIdFromSlug, getProfileImage } from '@/lib/utils';
+import { PosterCard } from '@/components/media';
+import { Carousel } from '@/components/ui/carousel';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
-import { Filmography } from '@/components/Filmography';
+import { Filmography } from '@/components/media/details';
 
 type PersonPageProps = {
   params: {

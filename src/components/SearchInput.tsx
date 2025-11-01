@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { Input } from './ui/input';
+import { Input } from './ui/forms';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 

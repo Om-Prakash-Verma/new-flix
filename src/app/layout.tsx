@@ -3,11 +3,10 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/dialogs';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
 import { AdScripts } from '@/components/AdScripts';
-import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { Inter, Roboto_Flex } from 'next/font/google';
 
 const inter = Inter({
@@ -69,7 +68,6 @@ export default function RootLayout({
     <html lang="en" className={cn('dark', inter.variable, robotoFlex.variable)}>
       <head>
         <AdScripts />
-        <GoogleAnalytics />
       </head>
       <body 
         className={cn(

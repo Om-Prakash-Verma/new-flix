@@ -1,10 +1,9 @@
 
 import { notFound } from 'next/navigation';
 import { getCollectionDetails } from '@/lib/tmdb';
-import { getPosterImage, getBackdropImage } from '@/lib/tmdb-images';
-import { extractIdFromSlug } from '@/lib/utils';
-import { BackgroundImage } from '@/components/BackgroundImage';
-import { PosterCard } from '@/components/PosterCard';
+import { extractIdFromSlug, getPosterImage, getBackdropImage } from '@/lib/utils';
+import { BackgroundImage } from '@/components/media/details';
+import { PosterCard } from '@/components/media';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 

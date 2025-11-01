@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { Film, Menu, Search, Dices, Compass, Clapperboard, Tv, FileText, ArrowLeft, type LucideIcon } from 'lucide-react';
 import { SearchInput } from './SearchInput';
 import { siteConfig } from '@/config/site';
-import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle, Separator } from '@/components/ui/layout';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from '@/components/ui/dialogs';
 import { SurpriseMeButton } from './SurpriseMeButton';
-import { Separator } from './ui/separator';
 
 export function Header() {
   return (

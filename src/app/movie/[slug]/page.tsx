@@ -2,17 +2,10 @@
 
 import { notFound } from 'next/navigation';
 import { getMovieDetails, getMovieRecommendations, getMovieReviews } from '@/lib/tmdb';
-import { getBackdropImage, getPosterImage } from '@/lib/tmdb-images';
-import { extractIdFromSlug } from '@/lib/utils';
-import { CreditsCarousel } from '@/components/CreditsCarousel';
-import { BackgroundImage } from '@/components/BackgroundImage';
-import { MediaHero } from '@/components/MediaHero';
+import { extractIdFromSlug, getBackdropImage, getPosterImage } from '@/lib/utils';
+import { CreditsCarousel, BackgroundImage, MediaHero, TrailersCarousel, WatchProviders, Recommendations, Reviews } from '@/components/media/details';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
-import { TrailersCarousel } from '@/components/TrailersCarousel';
-import { WatchProviders } from '@/components/WatchProviders';
-import { Recommendations } from '@/components/Recommendations';
-import { Reviews } from '@/components/Reviews';
 
 type MoviePageProps = {
   params: {

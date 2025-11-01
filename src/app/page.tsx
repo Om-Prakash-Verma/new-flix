@@ -1,17 +1,17 @@
 
 
-import { HeroSlideshow } from '@/components/HeroSlideshow';
+import { HeroSlideshow } from '@/components/Hero';
 import {
   fetchAllHomepageData,
   getGenres,
 } from '@/lib/tmdb';
-import { Carousel } from '@/components/Carousel';
-import { PosterCard } from '@/components/PosterCard';
-import type { Movie, TVShow } from '@/lib/tmdb-schemas';
-import { BackgroundImage } from '@/components/BackgroundImage';
-import { getPosterImage, getBackdropImage } from '@/lib/tmdb-images';
-import { FeaturedCollections } from '@/components/FeaturedCollections';
+import { PosterCard } from '@/components/media';
+import { Carousel } from '@/components/ui/carousel';
 import { RecentlyReleased } from '@/components/RecentlyReleased';
+import { FeaturedCollections } from '@/components/FeaturedCollections';
+import type { Movie, TVShow } from '@/lib/tmdb-schemas';
+import { BackgroundImage } from '@/components/media/details';
+import { getPosterImage, getBackdropImage } from '@/lib/utils';
 
 export const runtime = 'edge';
 

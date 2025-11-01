@@ -32,6 +32,7 @@ import { z } from 'zod';
 import { subMonths } from 'date-fns';
 import { redirect } from 'next/navigation';
 import { slugify } from '@/lib/utils';
+import { serverList } from './serverList';
 
 
 // =========================================================================
@@ -48,7 +49,7 @@ if (!API_KEY) {
 // CORE FETCHING LOGIC
 // =========================================================================
 
-async function fetchTMDB<T>(path: string, params: Record<string, string | number> = {}, schema: z.ZodSchema<T>): Promise<T | null> {
+export async function fetchTMDB<T>(path: string, params: Record<string, string | number> = {}, schema: z.ZodSchema<T>): Promise<T | null> {
   if (!API_KEY) return null; // Don't fetch if key is missing
 
   const url = new URL(`${API_BASE_URL}/${path}`);
@@ -81,7 +82,7 @@ async function fetchTMDB<T>(path: string, params: Record<string, string | number
 }
 
 // Common function for paged responses
-async function fetchPagedData<T extends z.ZodTypeAny>(path: string, params: Record<string, string | number>, itemSchema: T) {
+export async function fetchPagedData<T extends z.ZodTypeAny>(path: string, params: Record<string, string | number>, itemSchema: T) {
   const schema = pagedResponseSchema(itemSchema);
   const data = await fetchTMDB(path, params, schema);
   return data ?? { results: [], total_pages: 0, page: 1, total_results: 0 };
@@ -260,50 +261,6 @@ export async function fetchReviews(type: 'movie' | 'tv', id: number, page: numbe
     return getTvReviews(id, page);
 }
 
-
-// --- From actions/discover.ts ---
-
-type SortOption = 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'first_air_date.desc';
-
-type FetchDiscoverMediaParams = {
-    type: 'movie' | 'tv';
-    page: number;
-    filters: {
-        genre?: string;
-        year?: string;
-        country?: string;
-        sort: SortOption;
-    }
-};
-
-export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverMediaParams): Promise<{ results: (Movie | TVShow)[], total_pages: number }> {
-    const params: Record<string, string | number> = {
-        page: page,
-        sort_by: filters.sort,
-    };
-    if (filters.genre && filters.genre !== 'all') {
-        params.with_genres = filters.genre;
-    }
-    if (filters.year && filters.year !== 'all') {
-        if (type === 'movie') {
-            params.primary_release_year = filters.year;
-        } else {
-            params.first_air_date_year = filters.year;
-        }
-    }
-    if (filters.country && filters.country !== 'all') {
-        params.with_origin_country = filters.country;
-    }
-
-    if (type === 'movie') {
-        const data = await fetchPagedData('discover/movie', params, movieSchema);
-        return { results: data.results, total_pages: data.total_pages };
-    } else {
-        const data = await fetchPagedData('discover/tv', params, tvSchema);
-        return { results: data.results, total_pages: data.total_pages };
-    }
-}
-
 type FetchMediaByGenreParams = {
     genreId: string;
     page: number;
@@ -435,3 +392,42 @@ export async function searchMulti(query: string, page = 1) {
 
   return data;
 }
+
+// --- From lib/embed-fallback.ts ---
+
+const EmbedFallbackInputSchema = z.object({
+  tmdbId: z.string().describe('The TMDB ID of the movie or TV show.'),
+  imdbId: z.string().optional().describe('The IMDB ID of the movie or TV show.'),
+  season: z.number().optional().describe('The season number for TV shows.'),
+  episode: z.number().optional().describe('The episode number for TV shows.'),
+  title: z.string().describe('The title of the movie or TV show.'),
+  type: z.enum(['movie', 'tv']).describe('The type of content: movie or tv show'),
+  servers: z.array(z.string()).describe('A list of available server names.'),
+  currentServer: z.string().describe('The server that is currently failing.'),
+});
+export type EmbedFallbackInput = z.infer<typeof EmbedFallbackInputSchema>;
+
+const EmbedFallbackOutputSchema = z.object({
+  nextServer: z.string().optional().describe('The name of the next suggested server to try.'),
+  reasoning: z.string().describe('The reasoning behind suggesting the next server or lack thereof.'),
+  embedUrl: z.string().optional().describe('A directly generated embed URL if a high-confidence alternative is found.'),
+});
+export type EmbedFallbackOutput = z.infer<typeof EmbedFallbackOutputSchema>;
+
+export async function getEmbedFallback(input: EmbedFallbackInput): Promise<EmbedFallbackOutput> {
+  const currentIndex = input.servers.indexOf(input.currentServer);
+  
+  if (currentIndex >= 0 && currentIndex < input.servers.length - 1) {
+    const nextServer = input.servers[currentIndex + 1];
+    return {
+      nextServer: nextServer,
+      reasoning: `The current server, ${input.currentServer}, failed. Suggesting the next available server in the list: ${nextServer}.`
+    };
+  }
+
+  return {
+    reasoning: 'All available servers have been tried. No further alternatives can be suggested from the list.'
+  };
+}
+
+    

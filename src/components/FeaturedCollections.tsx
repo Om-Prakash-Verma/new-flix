@@ -2,11 +2,10 @@
 'use server';
 
 import { getCollectionDetails } from '@/lib/tmdb';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { ShadcnCarousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getBackdropImage } from '@/lib/tmdb-images';
-import { slugify } from '@/lib/utils';
+import { getBackdropImage, slugify } from '@/lib/utils';
 import type { CollectionDetails } from '@/lib/tmdb-schemas';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -36,7 +35,7 @@ export async function FeaturedCollections() {
       <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider px-4 sm:px-8">
         Featured Collections
       </h2>
-      <Carousel
+      <ShadcnCarousel
         opts={{
           align: 'start',
           loop: false,
@@ -56,7 +55,7 @@ export async function FeaturedCollections() {
         <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-background/50 backdrop-blur-sm hover:bg-background/80 border-2 border-primary/50 text-primary hover:border-primary transition-all duration-300 disabled:opacity-0 disabled:scale-90" >
           <ChevronRight className="h-6 w-6" />
         </CarouselNext>
-      </Carousel>
+      </ShadcnCarousel>
     </section>
   );
 }

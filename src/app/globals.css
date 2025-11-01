@@ -91,3 +91,20 @@
 .glass-card {
     @apply bg-card/80 backdrop-blur-lg border border-white/10 shadow-lg;
 }
+
+.animated-border-card {
+  --border-size: 1.5px;
+  background-image:
+    conic-gradient(from 90deg at 50% 50%, transparent 50%, hsl(var(--primary) / 0), hsl(var(--primary) / 0)),
+    conic-gradient(from 90deg at 50% 50%, hsl(var(--card)), hsl(var(--card)));
+  background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition: background-image 0.3s ease-in-out;
+}
+
+.animated-border-card:hover {
+   background-image:
+    conic-gradient(from 90deg at 50% 50%, transparent 50%, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.8)),
+    conic-gradient(from 90deg at 50% 50%, hsl(var(--card)), hsl(var(--card)));
+}

@@ -1,5 +1,5 @@
 
-import { MediaBrowser } from "@/components/MediaBrowser";
+import { MediaBrowser } from "@/components/media";
 import { getGenres, getCountries } from "@/lib/tmdb";
 
 export const runtime = 'edge';

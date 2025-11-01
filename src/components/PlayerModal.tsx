@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -6,25 +7,24 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Skeleton } from './ui/skeleton';
-import { serverList, type Server } from '@/lib/serverList';
-import { getExternalIds } from '@/lib/tmdb';
-import { getEmbedFallback } from '@/lib/embed-fallback';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2, Check } from 'lucide-react';
-import { Button } from './ui/button';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+  DialogHeader,
+  DialogDescription,
+  DialogTrigger,
+} from '@/components/ui/dialogs';
+import { Skeleton } from './ui/skeleton';
+import { serverList, type Server } from '@/lib/serverList';
+import { getExternalIds, getEmbedFallback, type EmbedFallbackInput } from '@/lib/tmdb';
+import { useToast } from '@/hooks/use-toast';
+import { ArrowLeft, Loader2, Check, ShieldCheck, PlayCircle } from 'lucide-react';
+import { Button } from './ui/button';
 import Draggable from 'react-draggable';
 import { cn } from '@/lib/utils';
-import { Switch } from './ui/switch';
-import { Label } from './ui/label';
+import { Switch, Label } from './ui/forms';
 
 //================================================================//
 // 1. TYPE DEFINITIONS
@@ -101,11 +101,13 @@ function PlayerModalContent({ playerInfo, initialServer, onClose }: PlayerModalC
       description: `The current server, ${currentServer.name}, seems to be having issues.`,
     });
 
-    const fallback = await getEmbedFallback({
+    const fallbackInput: EmbedFallbackInput = {
       ...playerInfo,
       servers: serverList.map(s => s.name),
       currentServer: currentServer.name,
-    });
+    };
+
+    const fallback = await getEmbedFallback(fallbackInput);
 
     if (fallback.nextServer) {
       handleServerChange(fallback.nextServer);
@@ -162,7 +164,7 @@ function PlayerModalContent({ playerInfo, initialServer, onClose }: PlayerModalC
     };
     updateUrl();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentServer, playerInfo, imdbId, handleFallback]);
+  }, [currentServer, playerInfo, imdbId]);
 
   return (
     <DialogContent className="bg-black border-none p-0 max-w-full w-full h-full flex flex-col gap-0 rounded-none">
@@ -373,5 +375,106 @@ function PlayerSkeleton() {
     </DialogContent>
   );
 }
+
+//================================================================//
+// 7. SERVER SELECTION MODAL & PLAY BUTTON
+//================================================================//
+
+type ServerSelectionModalProps = {
+  playerInfo: PlayerModalInfo;
+  children: React.ReactNode;
+};
+
+export function ServerSelectionModal({ playerInfo, children }: ServerSelectionModalProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [playerOpen, setPlayerOpen] = useState(false);
+  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+
+  const handleServerSelect = (server: Server) => {
+    setSelectedServer(server);
+    setDialogOpen(false);
+    setPlayerOpen(true);
+  };
+
+  return (
+    <>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent className="sm:max-w-md bg-card/90 backdrop-blur-lg border-border">
+          <DialogHeader className="text-center space-y-3">
+            <DialogTitle className="text-2xl">Select a Video Source</DialogTitle>
+            <DialogDescription>
+              Choose a server from the list below to start playing.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-2 bg-green-950/50 text-green-300 border border-green-700/30 p-3 rounded-lg">
+                <div className="flex items-center gap-3 text-xs">
+                    <ShieldCheck className="h-8 w-8 flex-shrink-0" />
+                    <div>
+                        <p className="font-bold">PRO TIP: Use the 'Sandbox ON' switch in the player to block most ads.</p>
+                        <p className="text-green-400/80">Only turn it OFF if the video doesn't load.</p>
+                    </div>
+                </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-4">
+            {serverList.map(server => (
+              <Button
+                key={server.id}
+                variant="outline"
+                className="h-auto justify-center p-3 text-sm font-semibold whitespace-normal hover:bg-primary/10 hover:border-primary/50 transition-all"
+                onClick={() => handleServerSelect(server)}
+              >
+                {server.name}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {selectedServer && (
+        <PlayerModal
+          playerInfo={playerInfo}
+          initialServer={selectedServer}
+          isOpen={playerOpen}
+          onOpenChange={setPlayerOpen}
+        />
+      )}
+    </>
+  );
+}
+
+export function PlayButton({ title, mediaType, tmdbId, season, episode, children }: {
+  title: string;
+  mediaType: 'movie' | 'tv';
+  tmdbId: number;
+  season?: number;
+  episode?: number;
+  children?: React.ReactNode;
+}) {
+  
+  const playerInfo: PlayerModalInfo = {
+    tmdbId: String(tmdbId),
+    title,
+    type: mediaType,
+    ...(season && { season }),
+    ...(episode && { episode }),
+  };
+
+  const triggerContent = children || (
+    <Button size="lg" className="font-bold text-base transition-all duration-300 hover:scale-105">
+        <PlayCircle className="mr-2 h-6 w-6" />
+        Play
+    </Button>
+  );
+
+  return (
+    <ServerSelectionModal playerInfo={playerInfo}>
+      {triggerContent}
+    </ServerSelectionModal>
+  );
+}
+    
 
     

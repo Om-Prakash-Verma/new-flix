@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Dices, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/dialogs';
 import { surpriseMeAction } from '@/lib/tmdb';
 
 export function SurpriseMeButton() {
