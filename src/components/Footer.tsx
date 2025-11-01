@@ -12,28 +12,22 @@ export function Footer() {
             <Film className="h-6 w-6 text-primary" />
             <span className="font-bold sm:inline-block">{siteConfig.name}</span>
           </Link>
-          <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built by an AI assistant. Not for commercial use. Movie and TV data provided by{' '}
-            <Link href="https://www.themoviedb.org/" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-4 hover:text-primary" prefetch={false}>
-              TMDB
-            </Link>.
-          </p>
         </div>
         <div className="flex flex-col md:flex-row gap-8 items-center">
-            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-center text-sm text-foreground font-semibold">
-                {siteConfig.mainNav.map((item) => (
-                    <Link key={item.href} href={item.href} className="hover:text-primary hover:underline underline-offset-4" prefetch={false}>
-                        {item.title}
-                    </Link>
-                ))}
-            </nav>
-            <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-center text-sm text-muted-foreground">
-            {siteConfig.footerNav.map((item) => (
-                <Link key={item.href} href={item.href} className="hover:text-primary hover:underline underline-offset-4" prefetch={false}>
-                    {item.title}
-                </Link>
+          <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-center text-sm text-foreground font-semibold">
+            {siteConfig.mainNav.map((item) => (
+              <Link key={item.href} href={item.href} className="hover:text-primary hover:underline underline-offset-4" prefetch={false}>
+                {item.title}
+              </Link>
             ))}
-            </nav>
+          </nav>
+          <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-center text-sm text-muted-foreground">
+            {siteConfig.footerNav.map((item) => (
+              <Link key={item.href} href={item.href} className="hover:text-primary hover:underline underline-offset-4" prefetch={false}>
+                {item.title}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>
