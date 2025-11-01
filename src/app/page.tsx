@@ -19,10 +19,10 @@ import { siteConfig } from '@/config/site';
 export const runtime = 'edge';
 
 export const metadata: Metadata = {
-  title: 'Watch Movies & TV Shows Online for Free | ' + siteConfig.name,
-  alternates: {
-    canonical: '/',
-  },
+    title: 'Watch Movies & TV Shows Online for Free | '+ siteConfig.name,
+    alternates: {
+        canonical: '/',
+    },
 };
 
 // Function to shuffle content for the hero slideshow

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
     };
   }
 
-  const title = `Watch ${movie.title} (4K) Online Free | ${siteConfig.name}`;
+  const title = `Watch ${movie.title} (4K) Online Free`;
   const description = `Stream ${movie.title} in stunning 4K quality for free. Dive into the full movie experience with reviews, cast details, and more. No ads, no sign-ups.`;
   const keywords = [
     movie.title,

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: TVShowPageProps): Promise<Met
     };
   }
 
-  const title = `Watch ${show.name} in 4K Online | All Episodes Free | ${siteConfig.name}`;
+  const title = `Watch ${show.name} in 4K Online | All Episodes Free`;
   const description = `Binge-watch all seasons and episodes of ${show.name} in stunning 4K for free. Get episode guides, cast details, and reviews. No subscription required.`;
   const keywords = [
     show.name,

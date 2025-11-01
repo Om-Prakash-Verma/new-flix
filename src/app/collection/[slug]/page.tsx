@@ -28,13 +28,14 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
     };
   }
 
-  const title = `${collection.name} | ${siteConfig.name}`;
-  const description = `Browse all movies from the ${collection.name}. ${collection.overview}`;
+  const title = `Watch the ${collection.name} Collection`;
+  const description = `Browse all ${collection.parts.length} movies from the ${collection.name} collection in order. ${collection.overview}`;
   const canonicalUrl = `/collection/${params.slug}`;
 
   return {
     title,
     description,
+    keywords: [collection.name, 'movie collection', 'saga', 'series'],
     alternates: {
         canonical: canonicalUrl,
     },
@@ -49,6 +50,12 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
             width: 500,
             height: 750,
             alt: `Poster for ${collection.name}`,
+          },
+          {
+            url: getBackdropImage(collection.backdrop_path, 'w1280'),
+            width: 1280,
+            height: 720,
+            alt: `Backdrop for ${collection.name}`,
           },
         ],
     },

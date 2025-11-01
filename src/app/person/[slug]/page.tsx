@@ -31,15 +31,14 @@ export async function generateMetadata({ params }: PersonPageProps): Promise<Met
         };
     }
 
-    const title = `${person.name} | ${siteConfig.name}`;
-    const description = person.biography 
-        ? person.biography.slice(0, 160) + '...' 
-        : `Information about ${person.name}.`;
+    const title = `${person.name} - Filmography`;
+    const description = `Explore the full filmography of ${person.name}. Discover all their movies and TV shows, read their biography, and find where to watch their work for free. Known for their role in ${person.known_for_department}.`;
     const canonicalUrl = `/person/${params.slug}`;
 
     return {
         title,
         description,
+        keywords: [person.name, 'filmography', 'actor', 'movies', 'tv shows', person.known_for_department],
         alternates: {
             canonical: canonicalUrl,
         },
