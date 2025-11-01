@@ -11,65 +11,65 @@ export const serverList: Server[] = [
   // Ads Free Servers (Reordered)
   {
     id: 1,
-    name: "Best Server [Ads Free]",
+    name: "Best Server ",
     movieLink: (tmdbId: string) => `https://rivestream.net/embed?type=movie&id=${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://rivestream.net/embed?type=tv&id=${tmdbId}&season=${season}&episode=${episode}`,
   },
   {
     id: 2,
-    name: "VidJoy [Ads Free]",
+    name: "VidJoy ",
     movieLink: (tmdbId: string) => `https://vidjoy.pro/embed/movie/${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://vidjoy.pro/embed/tv/${tmdbId}/${season}/${episode}`,
   },
   {
     id: 3,
-    name: "Portugues [Ads Free]",
+    name: "Portugues ",
     movieLink: (tmdbId: string) => `https://embed.warezcdn.link/filme/${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://embed.warezcdn.link/serie/${tmdbId}/${season}/${episode}`,
   },
   {
     id: 4,
-    name: "Russian [Ads Free]",
+    name: "Russian ",
     movieLink: (imdbId: string) => `https://api.insertunit.ws/embed/imdb/${imdbId}`,
     episodeLink: (imdbId: string, season: number, episode: number) => `https://api.insertunit.ws/embed/imdb/${imdbId}?season=${season}&episode=${episode}`,
     useImdb: true,
   },
   {
     id: 5,
-    name: "French [Ads Free]",
+    name: "French ",
     movieLink: (tmdbId: string) => `https://frembed.icu/api/film.php?id=${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://frembed.live/api/serie.php?id=${tmdbId}&sa=${season}&epi=${episode}`,
   },
   {
     id: 6,
-    name: "Videasy [Ads Free]",
+    name: "Videasy ",
     movieLink: (tmdbId: string) => `https://player.videasy.net/movie/${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://player.videasy.net/tv/${tmdbId}/${season}/${episode}?nextEpisode=true&autoplayNextEpisode=true&episodeSelector=true&color=8B5CF6`,
   },
   {
     id: 7,
-    name: "Vidzee [Ads Free]",
+    name: "Vidzee ",
     movieLink: (tmdbId: string) => `https://player.vidzee.wtf/embed/movie/${tmdbId}?server=1`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://player.vidzee.wtf/embed/tv/${tmdbId}/${season}/${episode}?server=1`,
   },
   {
     id: 8,
-    name: "Vidsrc Rip [Ads Free]",
+    name: "Vidsrc Rip ",
     movieLink: (tmdbId: string) => `https://vidsrc.rip/embed/movie/${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://vidsrc.rip/embed/tv/${tmdbId}/${season}/${episode}`,
   },
   {
     id: 9,
-    name: "Vidpro [Ads Free]",
+    name: "Vidpro ",
     movieLink: (tmdbId: string) => `https://player.vidpro.top/embed/movie/${tmdbId}`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://player.vidsrc.co/embed/tv/${tmdbId}/${season}/${episode}`,
   },
 
-  
+
   // Regular Servers (Ads)
   {
     id: 10,
-    name: "Hindi [Ads Free]",
+    name: "Hindi ",
     movieLink: (tmdbId: string) => `https://player.vidify.top/embed/movie/${tmdbId}?server=hindi`,
     episodeLink: (tmdbId: string, season: number, episode: number) => `https://vidify.top/embed/tv/${tmdbId}/${season}/${episode}?server=multi`,
   },
