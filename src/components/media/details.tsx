@@ -615,11 +615,13 @@ export function Filmography({ allCredits }: FilmographyProps) {
 
   return (
     <Card className="bg-card/80 rounded-lg">
-      <div className="p-4 space-y-4">
-        {allCredits.map((item) => (
-          <CreditRow key={`${item.id}-${item.credit_id}`} item={item} />
-        ))}
-      </div>
+        <ScrollArea className="h-[500px]">
+            <div className="p-4 space-y-4">
+                {allCredits.map((item) => (
+                    <CreditRow key={`${item.id}-${item.credit_id}`} item={item} />
+                ))}
+            </div>
+        </ScrollArea>
     </Card>
   );
 }
@@ -802,4 +804,5 @@ export function ReviewCard({ review }: ReviewCardProps) {
     </Card>
   );
 }
+
 

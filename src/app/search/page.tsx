@@ -104,7 +104,7 @@ function SearchResults({ query }: { query: string }) {
     // Reset and fetch for new query
     setIsInitialLoading(true);
     loadItemsRef.current(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   useEffect(() => {
