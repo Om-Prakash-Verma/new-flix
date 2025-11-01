@@ -5,8 +5,10 @@ import {
   movieSchema,
   tvSchema,
   pagedResponseSchema,
+  searchResultSchema,
   type Movie,
   type TVShow,
+  type SearchResult,
 } from './tmdb-schemas';
 import { fetchTMDB, fetchPagedData } from './tmdb';
 import { z } from 'zod';
@@ -52,4 +54,19 @@ export async function fetchDiscoverMedia({ type, page, filters }: FetchDiscoverM
         const data = await fetchPagedData('discover/tv', params, tvSchema);
         return { results: data.results, total_pages: data.total_pages };
     }
+}
+
+
+export async function searchMulti(query: string, page = 1) {
+    const schema = pagedResponseSchema(searchResultSchema);
+    const data = await fetchTMDB('search/multi', { query, page: String(page) }, schema);
+    
+    if (!data) {
+      return { results: [], total_pages: 0, page: 1, total_results: 0 };
+    }
+  
+    // Filter out people from the search results, as we only want movies and TV shows
+    data.results = data.results.filter(item => item.media_type !== 'person');
+  
+    return data;
 }

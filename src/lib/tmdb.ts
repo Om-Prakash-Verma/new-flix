@@ -379,20 +379,6 @@ export async function surpriseMeAction() {
   }
 }
 
-export async function searchMulti(query: string, page = 1) {
-  const schema = pagedResponseSchema(searchResultSchema);
-  const data = await fetchTMDB('search/multi', { query, page: String(page) }, schema);
-  
-  if (!data) {
-    return { results: [], total_pages: 0, page: 1, total_results: 0 };
-  }
-
-  // Filter out people from the search results, as we only want movies and TV shows
-  data.results = data.results.filter(item => item.media_type !== 'person');
-
-  return data;
-}
-
 // --- From lib/embed-fallback.ts ---
 
 const EmbedFallbackInputSchema = z.object({
@@ -429,5 +415,3 @@ export async function getEmbedFallback(input: EmbedFallbackInput): Promise<Embed
     reasoning: 'All available servers have been tried. No further alternatives can be suggested from the list.'
   };
 }
-
-    

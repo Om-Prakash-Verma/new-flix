@@ -3,15 +3,12 @@
 
 import { Suspense, useCallback, useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { searchMulti } from '@/lib/tmdb';
+import { searchMulti } from '@/lib/actions';
 import type { SearchResult } from '@/lib/tmdb-schemas';
 import { MediaListItem, MediaListItemSkeleton } from '@/components/media';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useInView } from 'react-intersection-observer';
 import { siteConfig } from '@/config/site';
-
-// Note: This page remains a client component because it relies heavily on the `useSearchParams` hook,
-// which must be used in a client component. The data fetching itself is optimized.
 
 function SearchPageContent() {
   const searchParams = useSearchParams();
@@ -30,8 +27,8 @@ function SearchPageContent() {
         </>
       ) : (
         <div className="py-12 text-center min-h-[60vh] flex flex-col justify-center px-4 sm:px-8">
-          <h1 className="text-3xl font-bold">Search {siteConfig.name}</h1>
-          <p className="text-muted-foreground mt-2">Find your next favorite movie or TV show.</p>
+            <h1 className="text-3xl font-bold">Search {siteConfig.name}</h1>
+            <p className="text-muted-foreground mt-2">Find your next favorite movie or TV show.</p>
         </div>
       )}
     </div>
@@ -39,20 +36,20 @@ function SearchPageContent() {
 }
 
 export default function SearchPage() {
-  return (
-    <Suspense fallback={<SearchPageSkeleton />}>
-      <SearchPageContent />
-    </Suspense>
-  )
+    return (
+        <Suspense fallback={<SearchPageSkeleton />}>
+            <SearchPageContent />
+        </Suspense>
+    )
 }
 
 function SearchPageSkeleton() {
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
-      <Skeleton className="h-10 w-1/2 mb-8" />
-      <SearchResultsSkeleton />
-    </div>
-  )
+    return (
+        <div className="max-w-4xl mx-auto py-8 px-4 sm:px-8">
+             <Skeleton className="h-10 w-1/2 mb-8" />
+             <SearchResultsSkeleton />
+        </div>
+    )
 }
 
 function SearchResults({ query }: { query: string }) {
@@ -68,39 +65,43 @@ function SearchResults({ query }: { query: string }) {
 
   const hasMore = page < totalPages;
 
-  const loadItems = useCallback(async (currentPage: number) => {
+  const loadItems = useCallback(async (currentPage: number, isInitial: boolean) => {
     setIsLoading(true);
-    try {
-      const data = await searchMulti(query, currentPage);
-      setItems(prev => currentPage === 1 ? data.results : [...prev, ...data.results]);
-      setTotalPages(data.total_pages);
-      setPage(currentPage);
-    } catch (error) {
-      console.error("Failed to fetch search results", error);
-    } finally {
-      setIsLoading(false);
-      if (isInitialLoading) setIsInitialLoading(false);
+    if (isInitial) {
+        setIsInitialLoading(true);
     }
-  }, [query, isInitialLoading]);
+    try {
+        const data = await searchMulti(query, currentPage);
+        setItems(prev => isInitial ? data.results : [...prev, ...data.results]);
+        setTotalPages(data.total_pages);
+        setPage(currentPage);
+    } catch (error) {
+        console.error("Failed to fetch search results", error);
+    } finally {
+        setIsLoading(false);
+        if (isInitial) {
+            setIsInitialLoading(false);
+        }
+    }
+  }, [query]);
 
   // Initial fetch
   useEffect(() => {
-    setIsInitialLoading(true);
-    loadItems(1);
+    loadItems(1, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]); // Re-run only when query changes
 
   // Infinite scroll fetch
   useEffect(() => {
     if (inView && !isLoading && hasMore) {
-      loadItems(page + 1);
+      loadItems(page + 1, false);
     }
   }, [inView, isLoading, hasMore, page, loadItems]);
-
+  
   if (isInitialLoading) {
     return <SearchResultsSkeleton />;
   }
-
+  
   const noResults = items.length === 0 && !isLoading;
 
   if (noResults) {
@@ -109,18 +110,18 @@ function SearchResults({ query }: { query: string }) {
 
   return (
     <>
-      <div className="flex flex-col gap-4">
-        {items.map((item) => (
-          <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type={item.media_type as 'movie' | 'tv'} />
-        ))}
-        {(isLoading && hasMore) && (
-          <>
-            <MediaListItemSkeleton />
-            <MediaListItemSkeleton />
-          </>
-        )}
-      </div>
-      <div ref={loadMoreRef} className="h-10" />
+        <div className="flex flex-col gap-4">
+            {items.map((item) => (
+                <MediaListItem key={`${item.media_type}-${item.id}`} item={item} type={item.media_type as 'movie' | 'tv'} />
+            ))}
+            {(isLoading && hasMore) && (
+                <>
+                    <MediaListItemSkeleton />
+                    <MediaListItemSkeleton />
+                </>
+            )}
+        </div>
+         <div ref={loadMoreRef} className="h-10" />
     </>
   );
 }
@@ -128,7 +129,7 @@ function SearchResults({ query }: { query: string }) {
 function SearchResultsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
-      {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
+        {[...Array(8)].map((_, i) => <MediaListItemSkeleton key={`skel-${i}`} />)}
     </div>
   );
 }
