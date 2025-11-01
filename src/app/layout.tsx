@@ -75,7 +75,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={cn('dark', inter.variable, robotoFlex.variable)}>
+    <html lang="en" className={cn('dark', inter.variable, robotoFlex.variable)} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -83,17 +83,17 @@ export default function RootLayout({
         />
         <AdScripts />
       </head>
-      <body 
+      <body
         className={cn(
-            "font-headline bg-background text-foreground antialiased",
-            "transition-all duration-500"
+          "font-headline bg-background text-foreground antialiased",
+          "transition-all duration-500"
         )}>
-          <div className="relative flex min-h-screen flex-col" data-version="1.0.2">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
+        <div className="relative flex min-h-screen flex-col" data-version="1.0.2">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
+        <Toaster />
       </body>
     </html>
   );
