@@ -26,9 +26,10 @@ export function SearchInput({ className }: { className?: string }) {
   };
 
   return (
-    <form onSubmit={handleSearch} className={cn("relative w-full group", className)}>
+    <form onSubmit={handleSearch} action="/search" method="GET" className={cn("relative w-full group", className)}>
       <Input
         type="text"
+        name="q"
         placeholder="Search movies, TV, actors..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
